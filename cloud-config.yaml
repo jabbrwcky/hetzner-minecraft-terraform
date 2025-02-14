@@ -1,0 +1,52 @@
+#cloud-config
+# See documentation for more configuration examples
+# https://cloudinit.readthedocs.io/en/latest/reference/examples.html
+package_reboot_if_required: true
+package_update: true
+package_upgrade: true
+packages:
+  - openjdk-21-jdk-headless
+  - curl
+
+write_files:
+  - path: /etc/systemd/system/minecraft.service
+    content: |
+      [Unit]
+      Description=Minecraft Server
+      After=network.target
+
+      [Service]
+      User=minecrafter
+      Group=minecrafter
+      Type=simple
+      WorkingDirectory=/home/minecrafter
+      ExecStart=/usr/bin/java -Xmx1024M -Xms1024M -jar server.jar nogui
+      Restart=on-failure
+
+      [Install]
+      WantedBy=multi-user.target
+    owner: root:root
+    permissions: "0o644"
+    encoding: text/plain
+    append: false
+    defer: false
+
+# Add users to the system
+# https://cloudinit.readthedocs.io/en/latest/topics/modules.html#users-and-groups
+users:
+  - name: minecrafter
+    shell: /bin/bash
+    homedir: /home/minecrafter
+
+# Run commands on first boot
+# https://cloudinit.readthedocs.io/en/latest/reference/examples.html#run-commands-on-first-boot
+runcmd:
+  - [cd, /home/minecrafter]
+  - [
+      curl,
+      -sSLO,
+      https://piston-data.mojang.com/v1/objects/4707d00eb834b446575d89a61a11b5d548d8c001/server.jar,
+    ]
+  - [systemctl, daemon-reload]
+  - [systemctl, enable, minecraft.service]
+  - [systemctl, start, --no-block, minecraft.service]
