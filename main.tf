@@ -62,9 +62,10 @@ resource "hcloud_firewall" "firewall" {
 }
 
 resource "hcloud_server" "minecraft" {
-  name        = "test-server"
+  name        = "minecraft-java"
   image       = "ubuntu-24.04"
   server_type = "cx22"
+  ssh_keys    = [hcloud_ssh_key.main.id]
   datacenter  = "fsn1-dc14"
   labels = {
     "svc" : "minecraft"
