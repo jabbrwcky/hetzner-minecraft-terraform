@@ -18,13 +18,55 @@ resource "hcloud_primary_ip" "mainv6" {
   }
 }
 
-resource "hcloud_server" "server_test" {
+resource "hcloud_firewall" "firewall" {
+  name = "firewall"
+  rule {
+    direction = "in"
+    protocol  = "icmp"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+  }
+
+  rule {
+    direction = "in"
+    protocol  = "tcp"
+    port      = "25565"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+  }
+  rule {
+    direction = "in"
+    protocol  = "udp"
+    port      = "25565"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+  }
+
+  rule {
+    direction = "in"
+    protocol  = "tcp"
+    port      = "22"
+    source_ips = [
+      "0.0.0.0/0",
+      "::/0"
+    ]
+  }
+}
+
+resource "hcloud_server" "minecraft" {
   name        = "test-server"
   image       = "ubuntu-24.04"
   server_type = "cx22"
   labels = {
     "svc" : "minecraft"
   }
+  firewall_ids = [ hcloud_firewall.firewall.id ]
   user_data = data.cloudinit_config.minecraft.rendered
   public_net {
     ipv4_enabled = true
