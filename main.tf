@@ -1,6 +1,7 @@
 resource "hcloud_primary_ip" "mainv4" {
   name          = "mc-ipv4"
   type          = "ipv4"
+  datacenter    = "fsn1-dc14"
   assignee_type = "server"
   auto_delete   = false
   labels = {
@@ -11,6 +12,7 @@ resource "hcloud_primary_ip" "mainv4" {
 resource "hcloud_primary_ip" "mainv6" {
   name          = "mc-ipv6"
   type          = "ipv6"
+  datacenter    = "fsn1-dc14"
   assignee_type = "server"
   auto_delete   = false
   labels = {
@@ -66,13 +68,13 @@ resource "hcloud_server" "minecraft" {
   labels = {
     "svc" : "minecraft"
   }
-  firewall_ids = [ hcloud_firewall.firewall.id ]
-  user_data = data.cloudinit_config.minecraft.rendered
+  firewall_ids = [hcloud_firewall.firewall.id]
+  user_data    = data.cloudinit_config.minecraft.rendered
   public_net {
     ipv4_enabled = true
-    ipv4 = hcloud_primary_ip.mainv4.id
+    ipv4         = hcloud_primary_ip.mainv4.id
     ipv6_enabled = true
-    ipv6 = hcloud_primary_ip.mainv6.id
+    ipv6         = hcloud_primary_ip.mainv6.id
   }
 }
 
