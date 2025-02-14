@@ -9,6 +9,16 @@ packages:
   - curl
 
 write_files:
+  - path: /home/minecrafter/eula.txt
+    content: |
+      # By changing the setting below to TRUE you are indicating your agreement to our EULA (https://account.mojang.com/documents/minecraft_eula).
+      # Fri Jan 01 00:00:00 UTC 2021
+      eula=true
+    owner: minecrafter:minecrafter
+    permissions: "0o644"
+    encoding: text/plain
+    append: false
+    defer: true
   - path: /etc/systemd/system/minecraft.service
     content: |
       [Unit]
