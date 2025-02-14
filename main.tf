@@ -65,6 +65,7 @@ resource "hcloud_server" "minecraft" {
   name        = "test-server"
   image       = "ubuntu-24.04"
   server_type = "cx22"
+  datacenter  = "fsn1-dc14"
   labels = {
     "svc" : "minecraft"
   }
