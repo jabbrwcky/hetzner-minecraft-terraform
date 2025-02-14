@@ -20,7 +20,7 @@ write_files:
       Group=minecrafter
       Type=simple
       WorkingDirectory=/home/minecrafter
-      ExecStart=/usr/bin/java -Xmx1024M -Xms1024M -jar server.jar nogui
+      ExecStart=/usr/bin/java -Xmx1024M -Xms1024M -XX:+UnlockExperimentalVMOptions -XX:+UseZGC -jar server.jar nogui
       Restart=on-failure
 
       [Install]
