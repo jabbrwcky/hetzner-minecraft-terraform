@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/cloudinit"
       version = "2.3.6-alpha1"
     }
+     dnsimple = {
+      source = "dnsimple/dnsimple"
+      version = "1.8.0"
+    }
   }
 }
 
@@ -17,4 +21,8 @@ provider "cloudinit" {
 
 provider "hcloud" {
   token = var.hcloud_token
+}
+
+provider "dnsimple" {
+  token = var.dnsimple_token
 }

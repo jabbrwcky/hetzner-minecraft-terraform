@@ -1,3 +1,7 @@
+locals {
+  create_dnsimple_record = (var.hostname != "" && var.dnsimple_token != "")
+}
+
 resource "hcloud_ssh_key" "main" {
   name       = "my-ssh-key"
   public_key = var.ssh_key

@@ -3,6 +3,21 @@ variable "hcloud_token" {
   sensitive   = true
 }
 
+variable "hostname" {
+  description = "Hostname to use e.g. 'foo' for foo.example.com"
+  type = string
+}
+
+variable "domain" {
+  description = "Domainto use e.g. 'example.com'"
+  type = string
+}
+
+variable "dnsimple_token" {
+  description = "DNSimple API Token"
+  sensitive   = true
+}
+
 variable "ssh_key" {
   description = "Public SSH key"
   type        = string
