@@ -6,6 +6,7 @@ locals {
       {
         "minecraft-server-jar-url" = var.minecraft-server-jar-url
         "volume_device" = hcloud_volume.worlds.linux_device
+        "server_id" = random_uuid.server_id.result
       }
     ),
     var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? {
@@ -13,6 +14,11 @@ locals {
   } : {})
 }
 
+resource "random_uuid" "server_id" {
+  keepers = {
+    hostname = var.hostname
+  }
+}
 resource "random_password" "rcon" {
   count            = var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? 1 : 0
   length           = 16

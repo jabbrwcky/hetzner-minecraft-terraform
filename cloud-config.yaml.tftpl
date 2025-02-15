@@ -7,26 +7,27 @@ package_upgrade: true
 packages:
   - openjdk-21-jdk-headless
   - curl
+
 device_aliases:
-  worlds: "${volume_device}"
+  minecraft: "${volume_device}"
 
 disk_setup:
-  my_alias:
+  minecraft:
     layout: true
     overwrite: false
     table_type: gpt
-    
+
 fs_setup:
-- cmd: "mkfs -t %(filesystem)s -L %(label)s %(device)s"
-  device: "${volume_device}"
-  filesystem: "ext4"
-  label: worlds
+  - cmd: "mkfs -t %(filesystem)s -L %(label)s %(device)s"
+    device: minecraft.0 #"${volume_device}"
+    filesystem: ext4
+    label: minecraft
 
 mounts:
-- ["${volume_device}", /home/minecrafter/worlds]
+  - [minecraft, /var/lib/minecraft, ext4, defaults, "0", "2"]
 
 write_files:
-  - path: /home/minecrafter/eula.txt
+  - path: /var/lib/minecraft/eula.txt
     content: |
       # By changing the setting below to TRUE you are indicating your agreement to our EULA (https://account.mojang.com/documents/minecraft_eula).
       eula=true
@@ -35,7 +36,7 @@ write_files:
     encoding: text/plain
     append: false
     defer: true
-  - path: /home/minecrafter/server.properties
+  - path: /var/lib/minecraft/server.properties
     content: |
       #Minecraft server properties
       accepts-transfers=${accepts-transfers}
@@ -114,8 +115,8 @@ write_files:
       User=minecrafter
       Group=minecrafter
       Type=simple
-      WorkingDirectory=/home/minecrafter
-      ExecStart=/usr/bin/java -Xmx2048M -Xms2048M -jar server.jar nogui
+      WorkingDirectory=/var/lib/minecraft
+      ExecStart=/usr/bin/java -Xmx2048M -Xms2048M -jar /home/minecrafter/server.jar --universe worlds --serverId ${server_id} --nogui
       Restart=on-failure
 
       [Install]
@@ -133,16 +134,14 @@ users:
     shell: /bin/bash
     homedir: /home/minecrafter
 
+byobu_by_default: enable-system
 # Run commands on first boot
 # https://cloudinit.readthedocs.io/en/latest/reference/examples.html#run-commands-on-first-boot
 runcmd:
   - [cd, /home/minecrafter]
-  - [
-      curl,
-      -sSLO,
-      ${minecraft-server-jar-url},
-    ]
-  - [chown, -R, minecrafter:minecrafter, .]
+  - [curl, -sSLO, "${minecraft-server-jar-url}"]
+  - [chown, -R, minecrafter:minecrafter, /home/minecrafter]
+  - [chown, -R, minecrafter:minecrafter, /var/lib/minecraft]
   - [systemctl, daemon-reload]
   - [systemctl, enable, minecraft.service]
   - [systemctl, start, --no-block, minecraft.service]
