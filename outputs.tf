@@ -23,3 +23,8 @@ output "rcon_password" {
   value       = random_password.rcon[0].result
   sensitive   = true
 }
+
+output "volume_device" {
+  description = "The device name of the volume"
+  value       = hcloud_volume.worlds.linux_device
+}

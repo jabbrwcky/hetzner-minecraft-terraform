@@ -7,16 +7,23 @@ package_upgrade: true
 packages:
   - openjdk-21-jdk-headless
   - curl
-device_aliases: {worlds: ${volume_device}}
+device_aliases:
+  worlds: "${volume_device}"
+
 disk_setup:
   my_alias:
     layout: true
     overwrite: false
     table_type: gpt
+    
 fs_setup:
-- {cmd: mkfs -t %(filesystem)s -L %(label)s %(device)s, device: my_alias.1, filesystem: ext4, label: worlds}
+- cmd: "mkfs -t %(filesystem)s -L %(label)s %(device)s"
+  device: "${volume_device}"
+  filesystem: "ext4"
+  label: worlds
+
 mounts:
-- [my_alias.1, /home/minecrafter/worlds]
+- ["${volume_device}", /home/minecrafter/worlds]
 
 write_files:
   - path: /home/minecrafter/eula.txt
