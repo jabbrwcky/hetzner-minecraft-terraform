@@ -83,6 +83,11 @@ write_files:
       use-native-transport=\${use-native-transport}
       view-distance=\${view-distance}
       white-list=\${white-list}
+    owner: minecrafter:minecrafter
+    permissions: "0o644"
+    encoding: text/plain
+    append: false
+    defer: true
   - path: /etc/systemd/system/minecraft.service
     content: |
       [Unit]
@@ -94,7 +99,7 @@ write_files:
       Group=minecrafter
       Type=simple
       WorkingDirectory=/home/minecrafter
-      ExecStart=/usr/bin/java -Xmx1024M -Xms1024M -XX:+UnlockExperimentalVMOptions -XX:+UseZGC -jar server.jar nogui
+      ExecStart=/usr/bin/java -Xmx3072M -Xms3072M -XX:+UnlockExperimentalVMOptions -XX:+UseZGC -jar server.jar nogui
       Restart=on-failure
 
       [Install]
@@ -121,6 +126,7 @@ runcmd:
       -sSLO,
       ${minecraft-server-jar-url},
     ]
+  - [chown, -R, minecrafter:minecrafter, .]
   - [systemctl, daemon-reload]
   - [systemctl, enable, minecraft.service]
   - [systemctl, start, --no-block, minecraft.service]
