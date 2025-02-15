@@ -13,6 +13,11 @@ variable "domain" {
   type = string
 }
 
+variable "dnsimple_account" {
+  description = "DNSimple Account ID"
+  type        = string
+}
+
 variable "dnsimple_token" {
   description = "DNSimple API Token"
   sensitive   = true
