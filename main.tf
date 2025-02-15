@@ -66,6 +66,18 @@ resource "hcloud_server" "minecraft" {
   }
 }
 
+resource "hcloud_volume_attachment" "main" {
+  volume_id = hcloud_volume.worlds.id
+  server_id = hcloud_server.minecraft.id
+  automount = true
+}
+
+resource "hcloud_volume" "worlds" {
+  name = "minecraft-worlds"
+  location = "fsn1"
+  size     = 10
+}
+
 data "cloudinit_config" "minecraft" {
   gzip          = false
   base64_encode = false

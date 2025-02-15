@@ -7,12 +7,21 @@ package_upgrade: true
 packages:
   - openjdk-21-jdk-headless
   - curl
+device_aliases: {my_alias: /dev/vdb}
+disk_setup:
+  my_alias:
+    layout: true
+    overwrite: false
+    table_type: gpt
+fs_setup:
+- {cmd: mkfs -t %(filesystem)s -L %(label)s %(device)s, device: my_alias.1, filesystem: ext4, label: worlds}
+mounts:
+- [my_alias.1, /home/minecrafter/worlds]
 
 write_files:
   - path: /home/minecrafter/eula.txt
     content: |
       # By changing the setting below to TRUE you are indicating your agreement to our EULA (https://account.mojang.com/documents/minecraft_eula).
-      # Fri Jan 01 00:00:00 UTC 2021
       eula=true
     owner: minecrafter:minecrafter
     permissions: "0o644"
@@ -99,7 +108,7 @@ write_files:
       Group=minecrafter
       Type=simple
       WorkingDirectory=/home/minecrafter
-      ExecStart=/usr/bin/java -Xmx3072M -Xms3072M -XX:+UnlockExperimentalVMOptions -XX:+UseZGC -jar server.jar nogui
+      ExecStart=/usr/bin/java -Xmx2048M -Xms2048M -jar server.jar nogui
       Restart=on-failure
 
       [Install]

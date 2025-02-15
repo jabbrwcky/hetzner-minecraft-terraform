@@ -61,7 +61,7 @@ variable "server_properties" {
     hide-online-players               = optional(bool, false)
     initial-disabled-packs            = optional(string, "")
     initial-enabled-packs             = optional(string, "vanilla")
-    level-name                        = optional(string, "default_world")
+    level-name                        = optional(string, "worlds/default")
     level-seed                        = optional(string, "")
     level-type                        = optional(string, "minecraft\\:normal")
     log-ips                           = optional(bool, true)
