@@ -1,3 +1,8 @@
+resource "hcloud_ssh_key" "main" {
+  name       = "my-ssh-key"
+  public_key = var.ssh_key
+}
+
 resource "hcloud_primary_ip" "mainv4" {
   name          = "mc-ipv4"
   type          = "ipv4"
@@ -20,47 +25,6 @@ resource "hcloud_primary_ip" "mainv6" {
   }
 }
 
-resource "hcloud_firewall" "firewall" {
-  name = "firewall"
-  rule {
-    direction = "in"
-    protocol  = "icmp"
-    source_ips = [
-      "0.0.0.0/0",
-      "::/0"
-    ]
-  }
-
-  rule {
-    direction = "in"
-    protocol  = "tcp"
-    port      = "25565"
-    source_ips = [
-      "0.0.0.0/0",
-      "::/0"
-    ]
-  }
-  rule {
-    direction = "in"
-    protocol  = "udp"
-    port      = "25565"
-    source_ips = [
-      "0.0.0.0/0",
-      "::/0"
-    ]
-  }
-
-  rule {
-    direction = "in"
-    protocol  = "tcp"
-    port      = "22"
-    source_ips = [
-      "0.0.0.0/0",
-      "::/0"
-    ]
-  }
-}
-
 resource "hcloud_server" "minecraft" {
   name        = "minecraft-java"
   image       = "ubuntu-24.04"
@@ -78,11 +42,6 @@ resource "hcloud_server" "minecraft" {
     ipv6_enabled = true
     ipv6         = hcloud_primary_ip.mainv6.id
   }
-}
-
-resource "hcloud_ssh_key" "main" {
-  name       = "my-ssh-key"
-  public_key = var.ssh_key
 }
 
 data "cloudinit_config" "minecraft" {
