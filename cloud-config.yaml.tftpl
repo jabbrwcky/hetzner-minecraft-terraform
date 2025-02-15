@@ -1,0 +1,126 @@
+#cloud-config
+# See documentation for more configuration examples
+# https://cloudinit.readthedocs.io/en/latest/reference/examples.html
+package_reboot_if_required: true
+package_update: true
+package_upgrade: true
+packages:
+  - openjdk-21-jdk-headless
+  - curl
+
+write_files:
+  - path: /home/minecrafter/eula.txt
+    content: |
+      # By changing the setting below to TRUE you are indicating your agreement to our EULA (https://account.mojang.com/documents/minecraft_eula).
+      # Fri Jan 01 00:00:00 UTC 2021
+      eula=true
+    owner: minecrafter:minecrafter
+    permissions: "0o644"
+    encoding: text/plain
+    append: false
+    defer: true
+  - path: /home/minecrafter/server.properties
+    content: |
+      #Minecraft server properties
+      accepts-transfers=\${accepts-transfers}
+      allow-flight=\${allow-flight}
+      allow-nether=\${allow-nether}
+      broadcast-console-to-ops=\${broadcast-console-to-ops}
+      broadcast-rcon-to-ops=\${broadcast-rcon-to-ops}
+      bug-report-link=\${bug-report-link}
+      difficulty=\${difficulty}
+      enable-command-block=\${enable-command-block}
+      enable-jmx-monitoring=\${enable-jmx-monitoring}
+      enable-query=\${enable-query}
+      enable-rcon=\${enable-rcon}
+      enable-status=\${enable-status}
+      enforce-secure-profile=\${enforce-secure-profile}
+      enforce-whitelist=\${enforce-whitelist}
+      entity-broadcast-range-percentage=\${entity-broadcast-range-percentage}
+      force-gamemode=\${force-gamemode}
+      function-permission-level=\${function-permission-level}
+      gamemode=\${gamemode}
+      generate-structures=\${generate-structures}
+      generator-settings=\${generator-settings}
+      hardcore=\${hardcore}
+      hide-online-players=\${hide-online-players}
+      initial-disabled-packs=\${initial-disabled-packs}
+      initial-enabled-packs=\${initial-enabled-packs}
+      level-name=\${level-name}
+      level-seed=\${level-seed}
+      level-type=\${level-type}
+      log-ips=\${log-ips}
+      max-chained-neighbor-updates=\${max-chained-neighbor-updates}
+      max-players=\${max-players}
+      max-tick-time=\${max-tick-time}
+      max-world-size=\${max-world-size}
+      motd=\${motd}
+      network-compression-threshold=\${network-compression-threshold}
+      online-mode=\${online-mode}
+      op-permission-level=\${op-permission-level}
+      pause-when-empty-seconds=\${pause-when-empty-seconds}
+      player-idle-timeout=\${player-idle-timeout}
+      prevent-proxy-connections=\${prevent-proxy-connections}
+      pvp=\${pvp}
+      query.port=\${query-port}
+      rate-limit=\${rate-limit}
+      rcon.password=\${rcon-password}
+      rcon.port=\${rcon-port}
+      region-file-compression=\${region-file-compression}
+      require-resource-pack=\${require-resource-pack}
+      resource-pack=\${resource-pack}
+      resource-pack-id=\${resource-pack-id}
+      resource-pack-prompt=\${resource-pack-prompt}
+      resource-pack-sha1=\${resource-pack-sha1}
+      server-ip=\${server-ip}
+      server-port=\${server-port}
+      simulation-distance=\${simulation-distance}
+      spawn-monsters=\${spawn-monsters}
+      spawn-protection=\${spawn-protection}
+      sync-chunk-writes=\${sync-chunk-writes}
+      text-filtering-config=\${text-filtering-config}
+      text-filtering-version=\${text-filtering-version}
+      use-native-transport=\${use-native-transport}
+      view-distance=\${view-distance}
+      white-list=\${white-list}
+  - path: /etc/systemd/system/minecraft.service
+    content: |
+      [Unit]
+      Description=Minecraft Server
+      After=network.target
+
+      [Service]
+      User=minecrafter
+      Group=minecrafter
+      Type=simple
+      WorkingDirectory=/home/minecrafter
+      ExecStart=/usr/bin/java -Xmx1024M -Xms1024M -XX:+UnlockExperimentalVMOptions -XX:+UseZGC -jar server.jar nogui
+      Restart=on-failure
+
+      [Install]
+      WantedBy=multi-user.target
+    owner: root:root
+    permissions: "0o644"
+    encoding: text/plain
+    append: false
+    defer: false
+
+# Add users to the system
+# https://cloudinit.readthedocs.io/en/latest/topics/modules.html#users-and-groups
+users:
+  - name: minecrafter
+    shell: /bin/bash
+    homedir: /home/minecrafter
+
+# Run commands on first boot
+# https://cloudinit.readthedocs.io/en/latest/reference/examples.html#run-commands-on-first-boot
+runcmd:
+  - [cd, /home/minecrafter]
+  - [
+      curl,
+      -sSLO,
+      ${minecraft-server-jar-url},
+    ]
+  - [systemctl, daemon-reload]
+  - [systemctl, enable, minecraft.service]
+  - [systemctl, start, --no-block, minecraft.service]

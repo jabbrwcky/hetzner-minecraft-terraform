@@ -18,7 +18,7 @@ resource "hcloud_firewall" "firewall" {
       "::/0"
     ]
   }
-  
+
   rule {
     direction = "in"
     protocol  = "udp"

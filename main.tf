@@ -1,10 +1,28 @@
 locals {
   create_dnsimple_record = (var.hostname != "" && var.dnsimple_token != "")
+  cloudinit_config = merge(
+    merge(
+      var.server_properties,
+      {
+        "minecraft-server-jar-url" = var.minecraft-server-jar-url
+      }
+    ),
+    var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? {
+      rcon-password = random_password.rcon[0].result
+  } : {})
 }
 
-resource "hcloud_ssh_key" "main" {
-  name       = "my-ssh-key"
-  public_key = var.ssh_key
+resource "random_password" "rcon" {
+  count            = var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? 1 : 0
+  length           = 16
+  special          = true
+  override_special = "!#$%&*()-_=+[]{}<>:?"
+}
+
+resource "hcloud_ssh_key" "keys" {
+  for_each   = var.ssh_key
+  name       = each.key
+  public_key = each.value
 }
 
 resource "hcloud_primary_ip" "mainv4" {
@@ -30,10 +48,10 @@ resource "hcloud_primary_ip" "mainv6" {
 }
 
 resource "hcloud_server" "minecraft" {
-  name        = "minecraft-java"
+  name        = "minecraft"
   image       = "ubuntu-24.04"
   server_type = "cx22"
-  ssh_keys    = [hcloud_ssh_key.main.id]
+  ssh_keys    = [for key in hcloud_ssh_key.keys : key.id]
   datacenter  = "fsn1-dc14"
   labels = {
     "svc" : "minecraft"
@@ -55,6 +73,6 @@ data "cloudinit_config" "minecraft" {
   part {
     filename     = "cloud-config.yaml"
     content_type = "text/cloud-config"
-    content      = file("${path.module}/cloud-config.yaml")
+    content      = templatefile("${path.module}/cloud-config.yaml.tftpl", local.cloudinit_config)
   }
 }
