@@ -7,7 +7,7 @@ package_upgrade: true
 packages:
   - openjdk-21-jdk-headless
   - curl
-device_aliases: {my_alias: /dev/vdb}
+device_aliases: {worlds: ${volume_device}}
 disk_setup:
   my_alias:
     layout: true
