@@ -9,7 +9,7 @@ variable "hostname" {
 }
 
 variable "domain" {
-  description = "Domainto use e.g. 'example.com'"
+  description = "Domain to use e.g. 'example.com'"
   type = string
 }
 
