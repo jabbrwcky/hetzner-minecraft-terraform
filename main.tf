@@ -7,6 +7,7 @@ locals {
         "minecraft-server-jar-url" = var.minecraft-server-jar-url
         "volume_device" = hcloud_volume.worlds.linux_device
         "server_id" = random_uuid.server_id.result
+        "ops" = jsonencode(var.ops)
       }
     ),
     var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? {

@@ -34,6 +34,17 @@ variable "minecraft-server-jar-url" {
   default     = "https://piston-data.mojang.com/v1/objects/4707d00eb834b446575d89a61a11b5d548d8c001/server.jar" # 1.21.4
 }
 
+variable "ops" {
+  description = "List of Minecraft usernames to op"
+  type        = list(object({
+    uuid = string
+    name = string
+    level = optional(number,4)
+    bypassesPlayerLimit = optional(bool, true)
+  }))
+  default     = []
+}
+
 variable "server_properties" {
   description = "Minecraft server properties. See https://minecraft.wiki/w/Server.properties for details."
   type = object({

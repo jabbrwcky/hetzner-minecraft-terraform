@@ -27,6 +27,14 @@ mounts:
   - [minecraft, /var/lib/minecraft, ext4, defaults, "0", "2"]
 
 write_files:
+  - path: /var/lib/minecraft/ops.json
+    content: |
+      ${ops}
+    owner: minecrafter:minecrafter
+    permissions: "0o644"
+    encoding: application/json; charset=utf-8
+    append: false
+    defer: false
   - path: /var/lib/minecraft/eula.txt
     content: |
       # By changing the setting below to TRUE you are indicating your agreement to our EULA (https://account.mojang.com/documents/minecraft_eula).
@@ -35,7 +43,7 @@ write_files:
     permissions: "0o644"
     encoding: text/plain
     append: false
-    defer: true
+    defer: false
   - path: /var/lib/minecraft/server.properties
     content: |
       #Minecraft server properties
@@ -104,7 +112,7 @@ write_files:
     permissions: "0o644"
     encoding: text/plain
     append: false
-    defer: true
+    defer: false
   - path: /etc/systemd/system/minecraft.service
     content: |
       [Unit]
@@ -135,11 +143,13 @@ users:
     homedir: /home/minecrafter
 
 byobu_by_default: enable-system
+
 # Run commands on first boot
 # https://cloudinit.readthedocs.io/en/latest/reference/examples.html#run-commands-on-first-boot
 runcmd:
   - [cd, /home/minecrafter]
   - [curl, -sSLO, "${minecraft-server-jar-url}"]
+  - [kdir, -p, /var/lib/minecraft/worlds]
   - [chown, -R, minecrafter:minecrafter, /home/minecrafter]
   - [chown, -R, minecrafter:minecrafter, /var/lib/minecraft]
   - [systemctl, daemon-reload]
