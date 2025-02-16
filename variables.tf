@@ -36,13 +36,13 @@ variable "minecraft-server-jar-url" {
 
 variable "ops" {
   description = "List of Minecraft usernames to op"
-  type        = list(object({
-    uuid = string
-    name = string
-    level = optional(number,4)
+  type = list(object({
+    uuid                = string
+    name                = string
+    level               = optional(number, 4)
     bypassesPlayerLimit = optional(bool, true)
   }))
-  default     = []
+  default = []
 }
 
 variable "server_properties" {

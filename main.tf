@@ -5,9 +5,10 @@ locals {
       var.server_properties,
       {
         "minecraft-server-jar-url" = var.minecraft-server-jar-url
-        "volume_device" = hcloud_volume.worlds.linux_device
-        "server_id" = random_uuid.server_id.result
-        "ops" = jsonencode(var.ops)
+        "volume_device"            = hcloud_volume.worlds.linux_device
+        "server_id"                = random_uuid.server_id.result
+        "ops"                      = jsonencode(var.ops)
+        "minecraft-service"        = file("${path.module}/minecraft.service")
       }
     ),
     var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? {
@@ -20,6 +21,7 @@ resource "random_uuid" "server_id" {
     hostname = var.hostname
   }
 }
+
 resource "random_password" "rcon" {
   count            = var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? 1 : 0
   length           = 16
@@ -81,7 +83,7 @@ resource "hcloud_volume_attachment" "main" {
 }
 
 resource "hcloud_volume" "worlds" {
-  name = "minecraft-worlds"
+  name     = "minecraft-worlds"
   location = "fsn1"
   size     = 10
 }

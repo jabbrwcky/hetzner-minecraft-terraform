@@ -1,0 +1,14 @@
+[Unit]
+Description=Minecraft Server
+After=network.target
+
+[Service]
+User=minecrafter
+Group=minecrafter
+Type=simple
+WorkingDirectory=/var/lib/minecraft
+ExecStart=/usr/bin/java -Xmx2048M -Xms2048M -jar /home/minecrafter/server.jar --universe worlds --serverId ${server_id} --nogui
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
