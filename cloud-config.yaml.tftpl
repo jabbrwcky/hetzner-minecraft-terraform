@@ -107,34 +107,47 @@ write_files:
     defer: true
   - path: /etc/systemd/system/minecraft.service
     content: |
-      ${minecraft-service}
+      [Unit]
+      Description=Minecraft Server
+      After=network.target
+
+      [Service]
+      User=minecrafter
+      Group=minecrafter
+      Type=simple
+      WorkingDirectory=/var/lib/minecraft
+      ExecStart=/usr/bin/java -Xmx2048M -Xms2048M -jar /home/minecrafter/server.jar --universe worlds --serverId ${server_id} --nogui
+      Restart=on-failure
+
+      [Install]
+      WantedBy=multi-user.target
     owner: root:root
     permissions: "0o644"
     encoding: text/plain
     append: false
     defer: true
   - path: /var/lib/minecraft/ops.json
-    content: |
+    content: >-
       ${ops}
     owner: minecrafter:minecrafter
     permissions: "0o644"
     append: false
     defer: true
 
-ssh_deletekeys: true
-ssh_keys:
-  rsa_private: |
-    ${rsa_private}
-  rsa_public: |
-    ${rsa_public}
-  ecdsa_private: |
-    ${ecdsa_private}
-  ecdsa_public: |
-    ${ecdsa_public}
-  ed25519_private: |
-    ${ed25519_private}
-  ed25519_public: |
-    ${ed25519_public}
+# ssh_deletekeys: true
+# ssh_keys:
+#   rsa_private: |
+#     ${rsa_private}
+#   rsa_public: |
+#     ${rsa_public}
+#   ecdsa_private: |
+#     ${ecdsa_private}
+#   ecdsa_public: |
+#     ${ecdsa_public}
+#   ed25519_private: |
+#     ${ed25519_private}
+#   ed25519_public: |
+#     ${ed25519_public}
 
 # Add users to the system
 # https://cloudinit.readthedocs.io/en/latest/topics/modules.html#users-and-groups
