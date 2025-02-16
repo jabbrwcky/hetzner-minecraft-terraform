@@ -31,9 +31,9 @@ output "volume_device" {
 
 output "host-keys" {
   description = "The host keys of the server"
-  value       = {
-    ecdsa = tls_private_key.ecdsa-host-key.public_key_fingerprint_sha256
-    rsa   = tls_private_key.rsa-host-key.public_key_fingerprint_sha256
+  value = {
+    ecdsa   = tls_private_key.ecdsa-host-key.public_key_fingerprint_sha256
+    rsa     = tls_private_key.rsa-host-key.public_key_fingerprint_sha256
     ed25519 = tls_private_key.ed25519-host-key.public_key_fingerprint_sha256
   }
 }
