@@ -19,7 +19,7 @@ disk_setup:
 
 fs_setup:
   - cmd: "mkfs -t %(filesystem)s -L %(label)s %(device)s"
-    device: "${volume_device}"
+    device: minecraft.0
     filesystem: ext4
     label: minecraft
 
@@ -126,28 +126,28 @@ write_files:
     encoding: text/plain
     append: false
     defer: true
-  - path: /var/lib/minecraft/ops.json
-    content: >-
-      ${ops}
-    owner: minecrafter:minecrafter
-    permissions: "0o644"
-    append: false
-    defer: true
+  # - path: /var/lib/minecraft/ops.json
+  #   content: >-
+  #     ${ops}
+  #   owner: minecrafter:minecrafter
+  #   permissions: "0o644"
+  #   append: false
+  #   defer: true
 
-# ssh_deletekeys: true
-# ssh_keys:
-#   rsa_private: |
-#     ${rsa_private}
-#   rsa_public: |
-#     ${rsa_public}
-#   ecdsa_private: |
-#     ${ecdsa_private}
-#   ecdsa_public: |
-#     ${ecdsa_public}
-#   ed25519_private: |
-#     ${ed25519_private}
-#   ed25519_public: |
-#     ${ed25519_public}
+ssh_deletekeys: true
+ssh_keys:
+  rsa_private: |
+    ${rsa_private}
+  rsa_public: |
+    ${rsa_public}
+  ecdsa_private: |
+    ${ecdsa_private}
+  ecdsa_public: |
+    ${ecdsa_public}
+  ed25519_private: |
+    ${ed25519_private}
+  ed25519_public: |
+    ${ed25519_public}
 
 # Add users to the system
 # https://cloudinit.readthedocs.io/en/latest/topics/modules.html#users-and-groups

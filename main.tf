@@ -113,7 +113,7 @@ resource "hcloud_volume" "worlds" {
 data "cloudinit_config" "minecraft" {
   gzip          = false
   base64_encode = false
-
+  
   part {
     filename     = "cloud-config.yaml"
     content_type = "text/cloud-config"
