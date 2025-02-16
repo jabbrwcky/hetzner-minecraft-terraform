@@ -8,13 +8,6 @@ locals {
         "volume_device"            = hcloud_volume.worlds.linux_device
         "server_id"                = random_uuid.server_id.result
         "ops"                      = jsonencode(var.ops)
-        # "minecraft-service"        = file("${path.module}/minecraft.service")
-        # "rsa_private"              = tls_private_key.rsa-host-key.private_key_openssh
-        # "rsa_public"               = tls_private_key.rsa-host-key.public_key_openssh
-        # "ecdsa_private"            = tls_private_key.ecdsa-host-key.private_key_openssh
-        # "ecdsa_public"             = tls_private_key.ecdsa-host-key.public_key_openssh
-        # "ed25519_private"          = tls_private_key.ed25519-host-key.private_key_openssh
-        # "ed25519_public"           = tls_private_key.ed25519-host-key.public_key_openssh
     }),
     var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? {
       rcon-password = random_password.rcon[0].result
@@ -33,23 +26,6 @@ resource "random_password" "rcon" {
   special          = true
   override_special = "!#$%&*()-_=+[]{}<>:?"
 }
-
-# # ECDSA key with P384 elliptic curve
-# resource "tls_private_key" "ecdsa-host-key" {
-#   algorithm   = "ECDSA"
-#   ecdsa_curve = "P384"
-# }
-
-# # RSA key of size 4096 bits
-# resource "tls_private_key" "rsa-host-key" {
-#   algorithm = "RSA"
-#   rsa_bits  = 4096
-# }
-
-# # ED25519 key
-# resource "tls_private_key" "ed25519-host-key" {
-#   algorithm = "ED25519"
-# }
 
 resource "hcloud_ssh_key" "keys" {
   for_each   = var.ssh_key
