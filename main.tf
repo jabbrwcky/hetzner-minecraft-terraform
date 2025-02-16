@@ -9,11 +9,11 @@ locals {
         "server_id"                = random_uuid.server_id.result
         "ops"                      = jsonencode(var.ops)
         "minecraft-service"        = file("${path.module}/minecraft.service")
-        "rsa_private"              = tls_private_key.rsa-host-key.tls_private_key_openssh
+        "rsa_private"              = tls_private_key.rsa-host-key.private_key_openssh
         "rsa_public"               = tls_private_key.rsa-host-key.public_key_openssh
-        "ecdsa_private"            = tls_private_key.ecdsa-host-key.tls_private_key_openssh
+        "ecdsa_private"            = tls_private_key.ecdsa-host-key.private_key_openssh
         "ecdsa_public"             = tls_private_key.ecdsa-host-key.public_key_openssh
-        "ed25519_private"          = tls_private_key.ed25519-host-key.tls_private_key_openssh
+        "ed25519_private"          = tls_private_key.ed25519-host-key.private_key_openssh
         "ed25519_public"           = tls_private_key.ed25519-host-key.public_key_openssh
     }),
     var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? {
