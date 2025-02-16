@@ -37,3 +37,8 @@ output "host-keys" {
     ed25519 = tls_private_key.ed25519-host-key.public_key_fingerprint_sha256
   }
 }
+
+output "user-data" {
+  description = "The user data for the server"
+  value       = data.cloudinit_config.minecraft.rendered
+}

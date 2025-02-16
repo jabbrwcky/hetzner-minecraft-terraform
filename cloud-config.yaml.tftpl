@@ -35,7 +35,7 @@ write_files:
     permissions: "0o644"
     encoding: text/plain
     append: false
-    defer: false
+    defer: true
   - path: /var/lib/minecraft/server.properties
     content: |
       #Minecraft server properties
@@ -104,20 +104,22 @@ write_files:
     permissions: "0o644"
     encoding: text/plain
     append: false
-    defer: false
+    defer: true
   - path: /etc/systemd/system/minecraft.service
-    content: ${minecraft-service}
+    content: |
+      ${minecraft-service}
     owner: root:root
     permissions: "0o644"
     encoding: text/plain
     append: false
-    defer: false
+    defer: true
   - path: /var/lib/minecraft/ops.json
-    content: "${ops}"
+    content: |
+      ${ops}
     owner: minecrafter:minecrafter
     permissions: "0o644"
     append: false
-    defer: false
+    defer: true
 
 ssh_deletekeys: true
 ssh_keys:
@@ -133,7 +135,6 @@ ssh_keys:
     ${ed25519_private}
   ed25519_public: |
     ${ed25519_public}
-    
 
 # Add users to the system
 # https://cloudinit.readthedocs.io/en/latest/topics/modules.html#users-and-groups
@@ -149,7 +150,7 @@ byobu_by_default: enable-system
 runcmd:
   - [cd, /home/minecrafter]
   - [curl, -sSLO, "${minecraft-server-jar-url}"]
-  - [kdir, -p, /var/lib/minecraft/worlds]
+  - [mkdir, -p, /var/lib/minecraft/worlds]
   - [chown, -R, minecrafter:minecrafter, /home/minecrafter]
   - [chown, -R, minecrafter:minecrafter, /var/lib/minecraft]
   - [systemctl, daemon-reload]
