@@ -24,7 +24,7 @@ fs_setup:
     label: minecraft
 
 mounts:
-  - ["${volume_device}", /var/lib/minecraft, ext4, defaults, "0", "2"]
+  - [minecraft.0, /var/lib/minecraft, ext4, defaults, "0", "2"]
 
 write_files:
   - path: /var/lib/minecraft/eula.txt
@@ -106,24 +106,11 @@ write_files:
     append: false
     defer: true
   - path: /etc/systemd/system/minecraft.service
-    content: |
-      [Unit]
-      Description=Minecraft Server
-      After=network.target
-
-      [Service]
-      User=minecrafter
-      Group=minecrafter
-      Type=simple
-      WorkingDirectory=/var/lib/minecraft
-      ExecStart=/usr/bin/java -Xmx2048M -Xms2048M -jar /home/minecrafter/server.jar --universe worlds --serverId ${server_id} --nogui
-      Restart=on-failure
-
-      [Install]
-      WantedBy=multi-user.target
+    encoding: b64
+    content: ${filebase64("${cwd}/minecraft.service")}
     owner: root:root
     permissions: "0o644"
-    encoding: text/plain
+    encoding: text/plains
     append: false
     defer: true
   - path: /var/lib/minecraft/ops.json
@@ -134,6 +121,13 @@ write_files:
     permissions: "0o644"
     append: false
     defer: true
+    %{ for plugin in plugins ~}
+    %{ for file in plugin.configfiles ~}
+  - path: /var/lib/minecraft/plugins/config/${plugin.name}/${file}
+    encoding: b64
+    content: ${filebase64("${cwd}/${file}")}
+    %{ endfor ~}
+    %{ endfor }
 
 # Add users to the system
 # https://cloudinit.readthedocs.io/en/latest/topics/modules.html#users-and-groups
@@ -148,8 +142,12 @@ byobu_by_default: enable-system
 # https://cloudinit.readthedocs.io/en/latest/reference/examples.html#run-commands-on-first-boot
 runcmd:
   - [cd, /home/minecrafter]
-  - [curl, -sSLO, "${minecraft-server-jar-url}"]
+  - [curl, -sSL, "${minecraft-server-jar-url}", -o, server.jar]
   - [mkdir, -p, /var/lib/minecraft/worlds]
+  %{ for plugin in plugins ~}
+  - [mkdir, -p, "/var/lib/minecraft/plugins/config/${plugin.name}"]
+  - [curl, -sSL, "${plugin.url}", -o, "/var/lib/minecraft/plugins/${plugin.name}.jar"]
+  %{ endfor ~}
   - [chown, -R, minecrafter:minecrafter, /home/minecrafter]
   - [chown, -R, minecrafter:minecrafter, /var/lib/minecraft]
   - [systemctl, daemon-reload]

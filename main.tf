@@ -8,6 +8,8 @@ locals {
         "volume_device"            = hcloud_volume.worlds.linux_device
         "server_id"                = random_uuid.server_id.result
         "ops"                      = jsonencode(var.ops)
+        "plugins"                  = var.plugins
+        "cwd" = path.module
     }),
     var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? {
       rcon-password = random_password.rcon[0].result
@@ -89,7 +91,7 @@ resource "hcloud_volume" "worlds" {
 data "cloudinit_config" "minecraft" {
   gzip          = false
   base64_encode = false
-  
+
   part {
     filename     = "cloud-config.yaml"
     content_type = "text/cloud-config"
