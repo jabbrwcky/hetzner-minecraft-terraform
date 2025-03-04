@@ -9,7 +9,7 @@ locals {
         "server_id"                = random_uuid.server_id.result
         "ops"                      = jsonencode(var.ops)
         "plugins"                  = var.plugins
-        "cwd" = path.module
+        "cwd"                      = path.module
     }),
     var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? {
       rcon-password = random_password.rcon[0].result

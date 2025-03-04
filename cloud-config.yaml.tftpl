@@ -19,12 +19,12 @@ disk_setup:
 
 fs_setup:
   - cmd: "mkfs -t %(filesystem)s -L %(label)s %(device)s"
-    device: minecraft.0
+    device: minecraft.1
     filesystem: ext4
     label: minecraft
 
 mounts:
-  - [minecraft.0, /var/lib/minecraft, ext4, defaults, "0", "2"]
+  - [minecraft.1, /var/lib/minecraft, ext4, defaults, "0", "2"]
 
 write_files:
   - path: /var/lib/minecraft/eula.txt
@@ -127,7 +127,9 @@ write_files:
     content: ${filebase64("${cwd}/${file}")}
     #%{ endfor ~}
     #%{ endfor }
-
+  - path: /tmp/ghostty.terminfo
+    content: ${filebase64("${cwd}/ghostty.terminfo")}
+    encoding: b64
 # Add users to the system
 # https://cloudinit.readthedocs.io/en/latest/topics/modules.html#users-and-groups
 users:
@@ -140,6 +142,7 @@ byobu_by_default: enable-system
 # Run commands on first boot
 # https://cloudinit.readthedocs.io/en/latest/reference/examples.html#run-commands-on-first-boot
 runcmd:
+  - [tic, -x, /tmp/ghostty.terminfo]
   - [cd, /home/minecrafter]
   - [curl, -sSL, "${minecraft-server-jar-url}", -o, server.jar]
   - [mkdir, -p, /var/lib/minecraft/worlds]

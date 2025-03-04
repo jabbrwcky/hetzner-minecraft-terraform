@@ -48,9 +48,9 @@ variable "ops" {
 variable "plugins" {
   description = "List of plugins to install"
   type = list(object({
-    name         = string
-    url          = string
-    configfiles  = optional(list(string), [])
+    name        = string
+    url         = string
+    configfiles = optional(list(string), [])
   }))
 
   default = []
