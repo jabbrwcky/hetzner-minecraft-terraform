@@ -110,7 +110,6 @@ write_files:
     content: ${filebase64("${cwd}/minecraft.service")}
     owner: root:root
     permissions: "0o644"
-    encoding: text/plains
     append: false
     defer: true
   - path: /var/lib/minecraft/ops.json
@@ -121,13 +120,13 @@ write_files:
     permissions: "0o644"
     append: false
     defer: true
-    %{ for plugin in plugins ~}
-    %{ for file in plugin.configfiles ~}
+    #%{ for plugin in plugins ~}
+    #%{ for file in plugin.configfiles ~}
   - path: /var/lib/minecraft/plugins/config/${plugin.name}/${file}
     encoding: b64
     content: ${filebase64("${cwd}/${file}")}
-    %{ endfor ~}
-    %{ endfor }
+    #%{ endfor ~}
+    #%{ endfor }
 
 # Add users to the system
 # https://cloudinit.readthedocs.io/en/latest/topics/modules.html#users-and-groups
@@ -144,10 +143,16 @@ runcmd:
   - [cd, /home/minecrafter]
   - [curl, -sSL, "${minecraft-server-jar-url}", -o, server.jar]
   - [mkdir, -p, /var/lib/minecraft/worlds]
-  %{ for plugin in plugins ~}
+  #%{ for plugin in plugins ~}
   - [mkdir, -p, "/var/lib/minecraft/plugins/config/${plugin.name}"]
-  - [curl, -sSL, "${plugin.url}", -o, "/var/lib/minecraft/plugins/${plugin.name}.jar"]
-  %{ endfor ~}
+  - [
+      curl,
+      -sSL,
+      "${plugin.url}",
+      -o,
+      "/var/lib/minecraft/plugins/${plugin.name}.jar",
+    ]
+  #%{ endfor ~}
   - [chown, -R, minecrafter:minecrafter, /home/minecrafter]
   - [chown, -R, minecrafter:minecrafter, /var/lib/minecraft]
   - [systemctl, daemon-reload]
