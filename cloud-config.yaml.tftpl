@@ -120,13 +120,13 @@ write_files:
     permissions: "0o644"
     append: false
     defer: true
-    #%{ for plugin in plugins ~}
-    #%{ for file in plugin.configfiles ~}
+    %{ for plugin in plugins ~}
+    %{ for file in plugin.configfiles ~}
   - path: /var/lib/minecraft/plugins/config/${plugin.name}/${file}
     encoding: b64
     content: ${filebase64("${cwd}/${file}")}
-    #%{ endfor ~}
-    #%{ endfor }
+    %{ endfor ~}
+    %{ endfor }
   - path: /tmp/ghostty.terminfo
     content: ${filebase64("${cwd}/ghostty.terminfo")}
     encoding: b64
@@ -146,7 +146,7 @@ runcmd:
   - [cd, /home/minecrafter]
   - [curl, -sSL, "${minecraft-server-jar-url}", -o, server.jar]
   - [mkdir, -p, /var/lib/minecraft/worlds]
-  #%{ for plugin in plugins ~}
+  %{ for plugin in plugins ~}
   - [mkdir, -p, "/var/lib/minecraft/plugins/config/${plugin.name}"]
   - [
       curl,
@@ -155,7 +155,7 @@ runcmd:
       -o,
       "/var/lib/minecraft/plugins/${plugin.name}.jar",
     ]
-  #%{ endfor ~}
+  %{ endfor ~}
   - [chown, -R, minecrafter:minecrafter, /home/minecrafter]
   - [chown, -R, minecrafter:minecrafter, /var/lib/minecraft]
   - [systemctl, daemon-reload]
