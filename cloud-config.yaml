@@ -1,0 +1,41 @@
+#cloud-config
+merge_how:
+  - name: list
+    settings: [append]
+  - name: dict
+    settings: [no_replace, recurse_list]
+
+package_reboot_if_required: true
+package_update: true
+package_upgrade: true
+packages:
+  - openjdk-21-jdk-headless
+  - curl
+# Add users to the system
+# https://cloudinit.readthedocs.io/en/latest/topics/modules.html#users-and-groups
+users:
+  - name: minecrafter
+    shell: /bin/bash
+    homedir: /home/minecrafter
+
+byobu_by_default: enable-system
+
+write_files:
+  - path: /var/lib/minecraft/eula.txt
+    content: |
+      # By changing the setting below to TRUE you are indicating your agreement to our EULA (https://account.mojang.com/documents/minecraft_eula).
+      eula=true
+    owner: minecrafter:minecrafter
+    permissions: "0o644"
+    encoding: text/plain
+    append: false
+    defer: true
+
+runcmd:
+  - [cd, /home/minecrafter]
+  - [mkdir, -p, /var/lib/minecraft/worlds]
+  - [chown, -R, minecrafter:minecrafter, /home/minecrafter]
+  - [chown, -R, minecrafter:minecrafter, /var/lib/minecraft]
+  - [systemctl, daemon-reload]
+  - [systemctl, enable, minecraft.service]
+  - [systemctl, start, --no-block, minecraft.service]

@@ -1,13 +1,4 @@
 #cloud-config
-# See documentation for more configuration examples
-# https://cloudinit.readthedocs.io/en/latest/reference/examples.html
-package_reboot_if_required: true
-package_update: true
-package_upgrade: true
-packages:
-  - openjdk-21-jdk-headless
-  - curl
-
 device_aliases:
   minecraft: "${volume_device}"
 
@@ -27,15 +18,6 @@ mounts:
   - ["${volume_device}", /var/lib/minecraft, ext4, defaults, "0", "2"]
 
 write_files:
-  - path: /var/lib/minecraft/eula.txt
-    content: |
-      # By changing the setting below to TRUE you are indicating your agreement to our EULA (https://account.mojang.com/documents/minecraft_eula).
-      eula=true
-    owner: minecrafter:minecrafter
-    permissions: "0o644"
-    encoding: text/plain
-    append: false
-    defer: true
   - path: /var/lib/minecraft/server.properties
     content: |
       #Minecraft server properties
@@ -120,44 +102,10 @@ write_files:
     permissions: "0o644"
     append: false
     defer: true
-    %{ for plugin in plugins ~}
-    %{ for file in plugin.configfiles ~}
-  - path: /var/lib/minecraft/plugins/config/${plugin.name}/${file}
-    encoding: b64
-    content: ${filebase64("${cwd}/${file}")}
-    %{ endfor ~}
-    %{ endfor }
   - path: /tmp/ghostty.terminfo
     content: ${filebase64("${cwd}/ghostty.terminfo")}
     encoding: b64
-# Add users to the system
-# https://cloudinit.readthedocs.io/en/latest/topics/modules.html#users-and-groups
-users:
-  - name: minecrafter
-    shell: /bin/bash
-    homedir: /home/minecrafter
 
-byobu_by_default: enable-system
-
-# Run commands on first boot
-# https://cloudinit.readthedocs.io/en/latest/reference/examples.html#run-commands-on-first-boot
 runcmd:
   - [tic, -x, /tmp/ghostty.terminfo]
-  - [cd, /home/minecrafter]
   - [curl, -sSL, "${minecraft-server-jar-url}", -o, server.jar]
-  - [mkdir, -p, /var/lib/minecraft/worlds]
-  %{ for plugin in plugins ~}
-  - [mkdir, -p, "/var/lib/minecraft/plugins/config/${plugin.name}"]
-  - [
-      curl,
-      -sSL,
-      "${plugin.url}",
-      -o,
-      "/var/lib/minecraft/plugins/${plugin.name}.jar",
-    ]
-  %{ endfor ~}
-  - [chown, -R, minecrafter:minecrafter, /home/minecrafter]
-  - [chown, -R, minecrafter:minecrafter, /var/lib/minecraft]
-  - [systemctl, daemon-reload]
-  - [systemctl, enable, minecraft.service]
-  - [systemctl, start, --no-block, minecraft.service]

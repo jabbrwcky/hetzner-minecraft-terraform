@@ -95,6 +95,40 @@ data "cloudinit_config" "minecraft" {
   part {
     filename     = "cloud-config.yaml"
     content_type = "text/cloud-config"
+    content      = file("${path.module}/cloud-config.yaml")
+  }
+  part {
+    filename     = "cloud-config.yaml"
+    content_type = "text/cloud-config"
+    content      = templatefile("${path.module}/cloud-config-plugins.yaml.tftpl", {plugins = yamlencode(local.plugins)})
+  }
+  part {
+    filename     = "cloud-config.yaml"
+    content_type = "text/cloud-config"
     content      = templatefile("${path.module}/cloud-config.yaml.tftpl", local.cloudinit_config)
   }
 }
+
+locals {
+  plugins = {
+    write_files = flatten([
+      for plugin in var.plugins : [ for f in plugin.configfiles : {
+        path     = "/var/lib/minecraft/plugins/${plugin.name}.jar"
+        encoding = "b64"
+        content  = filebase64("${path.module}/${f}")
+      }] if plugin.configfiles != null
+    ])
+    runcmd = concat(
+      [ for plugin in var.plugins :
+        ["mkdir", "-p", "/var/lib/minecraft/plugins/config/${plugin.name}"]
+      ],
+      [for plugin in var.plugins :
+        ["curl", "-sSL", "${plugin.url}", "-o", "/var/lib/minecraft/plugins/${plugin.name}.jar"]
+      ]
+    )
+  }
+}
+output "plugins" {
+  value = local.plugins
+}
+
