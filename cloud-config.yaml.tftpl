@@ -108,4 +108,5 @@ write_files:
 
 runcmd:
   - [tic, -x, /tmp/ghostty.terminfo]
+  - [cd, /var/lib/minecraft]
   - [curl, -sSL, "${minecraft-server-jar-url}", -o, server.jar]
