@@ -32,7 +32,6 @@ write_files:
     defer: true
 
 runcmd:
-  - [cd, /home/minecrafter]
   - [mkdir, -p, /var/lib/minecraft/worlds]
   - [chown, -R, minecrafter:minecrafter, /home/minecrafter]
   - [chown, -R, minecrafter:minecrafter, /var/lib/minecraft]
