@@ -93,17 +93,14 @@ data "cloudinit_config" "minecraft" {
   base64_encode = false
 
   part {
-    filename     = "cloud-config-base.yaml"
     content_type = "text/cloud-config"
     content      = file("${path.module}/cloud-config.yaml")
   }
   part {
-    filename     = "cloud-config-plugins.yaml"
     content_type = "text/cloud-config"
     content      = templatefile("${path.module}/cloud-config-plugins.yaml.tftpl", {plugins = yamlencode(local.plugins)})
   }
   part {
-    filename     = "cloud-config.yaml"
     content_type = "text/cloud-config"
     content      = templatefile("${path.module}/cloud-config.yaml.tftpl", local.cloudinit_config)
   }
