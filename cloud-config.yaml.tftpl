@@ -102,11 +102,11 @@ write_files:
     permissions: "0o644"
     append: false
     defer: true
-  - path: /tmp/ghostty.terminfo
+  - path: /root/ghostty.terminfo
     content: ${filebase64("${cwd}/ghostty.terminfo")}
     encoding: b64
 
 runcmd:
-  - [tic, -x, /tmp/ghostty.terminfo]
+  - [tic, -x, /root/ghostty.terminfo]
   - [cd, /var/lib/minecraft]
   - [curl, -sSL, "${minecraft-server-jar-url}", -o, server.jar]
