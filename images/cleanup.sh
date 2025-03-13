@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 cloud-init clean --logs --machine-id --seed --configs all
+rm -rvf /var/lib/cloud/instances /etc/machine-id /var/lib/dbus/machine-id /var/log/cloud-init*
 
 rm -rf /run/cloud-init/*
 rm -rf /var/lib/cloud/*

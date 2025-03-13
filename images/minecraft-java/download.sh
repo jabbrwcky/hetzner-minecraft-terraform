@@ -1,9 +1,9 @@
-#!/usr/bin/env sh
+#!/usr/bin/env sh -x
 
 cd /home/minecrafter
 
 PROJECT="paper"
-MINECRAFT_VERSION="${minecraft_version}"
+MINECRAFT_VERSION="1.21.4"
 
 LATEST_BUILD=$(curl -s https://api.papermc.io/v2/projects/${PROJECT}/versions/${MINECRAFT_VERSION}/builds | \
     jq -r '.builds | map(select(.channel == "default") | .build) | .[-1]')
@@ -23,8 +23,4 @@ fi
 
 
 mkdir /home/minecrafter/plugins
-%{ for plugin in plugins ~}
-curl --output-dir /home/minecrafter/plugins/${plugin.name} --create-dirs -OL ${plugin.url}
-%{ endfor ~}
-
 chown -R minecrafter:minecrafter /home/minecrafter/plugins

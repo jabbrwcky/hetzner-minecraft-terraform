@@ -1,7 +1,7 @@
 #cloud-config
-growpart:
-  mode: "off"
-resize_rootfs: false
+# growpart:
+#   mode: "off"
+# resize_rootfs: false
 
 package_reboot_if_required: false
 package_update: true
@@ -9,6 +9,7 @@ package_upgrade: true
 packages:
   - openjdk-21-jdk-headless
   - curl
+  - jq
 
 users:
   - name: minecrafter
