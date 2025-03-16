@@ -7,28 +7,6 @@ packer {
   }
 }
 
-variable "hcloud_token" {
-  type      = string
-  sensitive = true
-  default   = "${env("HCLOUD_TOKEN")}"
-}
-
-variable "plugins" {
-  description = "List of plugins to install"
-  type = list(object({
-    name        = string
-    url         = string
-  }))
-
-  default = []
-}
-
-variable "minecraft_version" {
-  description = "Minecraft version to install"
-  type        = string
-  default     = "1.21.4"
-}
-
 locals {
   plugins = [ for plugin in var.plugins :
     "curl --output-dir /home/minecrafter/plugins/${plugin.name} --create-dirs -OL ${plugin.url}"
@@ -63,6 +41,7 @@ build {
     build_labels = {
       "build-time"   = timestamp()
       "build-source" = basename(path.cwd)
+      "version"      = var.minecraft_version
     }
   }
 
@@ -74,6 +53,18 @@ build {
     valid_exit_codes = [0, 2] # 2 is returned by cloud-init status on recoverable errors
     inline = [
       "cloud-init status --wait",
+    ]
+  }
+
+  provisioner "file" {
+    destination = "/tmp/ghostty.terminfo"
+    source      = "../ghostty.terminfo"
+  }
+
+  provisioner "shell" {
+    inline = [
+      "tic -x /tmp/ghostty.terminfo",
+      "rm /tmp/ghostty.terminfo",
     ]
   }
 
