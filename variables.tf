@@ -2,6 +2,7 @@ variable "hcloud_token" {
   description = "Hetzner Cloud API Token"
   sensitive   = true
   type = string
+    default   = "${env("HCLOUD_TOKEN")}"
 }
 variable "tfsp_client_id" {
   description = "Terraform Cloud Service Principal Client ID"
