@@ -120,26 +120,3 @@ data "cloudinit_config" "minecraft" {
   }
 }
 
-locals {
-  plugins = {
-    write_files = flatten([
-      for plugin in var.plugins : [ for f in plugin.configfiles : {
-        path     = "/var/lib/minecraft/plugins/${plugin.name}.jar"
-        encoding = "b64"
-        content  = filebase64("${path.module}/${f}")
-      }] if plugin.configfiles != null
-    ])
-    runcmd = concat(
-      [ for plugin in var.plugins :
-        ["mkdir", "-p", "/var/lib/minecraft/plugins/config/${plugin.name}"]
-      ],
-      [for plugin in var.plugins :
-        ["curl", "-sSL", "${plugin.url}", "-o", "/var/lib/minecraft/plugins/${plugin.name}.jar"]
-      ]
-    )
-  }
-}
-output "plugins" {
-  value = local.plugins
-}
-

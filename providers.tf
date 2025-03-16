@@ -27,7 +27,10 @@ terraform {
   }
 }
 
-provider "hcp" {}
+provider "hcp" {
+  client_id = var.tfsp_client_id
+  client_secret = var.tfsp_client_secret
+}
 
 provider "cloudinit" {}
 
