@@ -24,12 +24,7 @@ output "rcon_password" {
   sensitive   = true
 }
 
-output "volume_device" {
-  description = "The device name of the volume"
-  value       = hcloud_volume.worlds.linux_device
-}
-
-output "user-data" {
-  description = "The user data for the server"
-  value       = data.cloudinit_config.minecraft.rendered
+output "image" {
+  description = "Packer image used"
+  value       = data.hcp_packer_artifact.mcpaper-java
 }
