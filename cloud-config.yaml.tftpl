@@ -98,7 +98,7 @@ write_files:
     append: false
     defer: true
 
-    runcmd:
+runcmd:
   - [sed, -i, "s/3072/${mc_ram}/g", /etc/systemd/system/minecraft.service]
   - [systemctl, daemon-reload]
   - [systemctl, enable, minecraft]
