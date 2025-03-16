@@ -1,0 +1,10 @@
+#cloud-config
+locale: en_US.UTF-8
+growpart:
+  mode: "off"
+resize_rootfs: false
+
+ssh_pwauth: false
+disable_root_opts: no-port-forwarding,no-agent-forwarding,no-X11-forwarding
+
+byobu_by_default: enable-system

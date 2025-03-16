@@ -25,7 +25,7 @@ source "hcloud" "base" {
     "minecraft_version" = var.minecraft_version
   }
 
-  user_data = file("user-data.txt")
+  # user_data_file = "cloud-init.yml"
 }
 
 build {
@@ -49,22 +49,21 @@ build {
     name         = "papermc-java"
   }
 
-  provisioner "shell" {
-    valid_exit_codes = [0, 2] # 2 is returned by cloud-init status on recoverable errors
-    inline = [
-      "cloud-init status --wait",
-    ]
-  }
-
   provisioner "file" {
     destination = "/tmp/ghostty.terminfo"
     source      = "../ghostty.terminfo"
   }
 
   provisioner "shell" {
+    valid_exit_codes = [0, 2] # 2 is returned by cloud-init status on recoverable errors
     inline = [
-      "tic -x /tmp/ghostty.terminfo",
-      "rm /tmp/ghostty.terminfo",
+      "cloud-init status --wait",
+    ]
+  }
+  provisioner "shell" {
+    script = "scripts/system_setup.sh"
+    environment_vars = [
+      "MINECRAFT_VERSION=${var.minecraft_version}",
     ]
   }
 
@@ -84,10 +83,6 @@ build {
       ]
     }
   }
-
-  # provisioner "shell"{
-  #   inline = local.plugins
-  # }
 
   provisioner "file"{
     destination = "/home/minecrafter/eula.txt"
