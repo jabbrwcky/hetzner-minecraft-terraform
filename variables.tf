@@ -2,13 +2,14 @@ variable "hcloud_token" {
   description = "Hetzner Cloud API Token"
   sensitive   = true
   type = string
-    default   = "${env("HCLOUD_TOKEN")}"
 }
+
 variable "tfsp_client_id" {
   description = "Terraform Cloud Service Principal Client ID"
   sensitive   = true
   type = string
 }
+
 variable "tfsp_client_secret" {
   description = "Terraform Cloud Service Principal Client Secret"
   sensitive   = true
@@ -20,6 +21,7 @@ variable "hcloud_location" {
   type        = string
   default     = "fsn1"
 }
+
 variable "hcloud_datacenter" {
   description = "Hetzner Cloud datacenter"
   type        = string
