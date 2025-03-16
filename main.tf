@@ -6,7 +6,7 @@ data hcloud_server_type "mc" {
   name = var.hcloud_server_type
 }
 
-data hcloud_datacenters "dc" { }
+data hcloud_datacenters "dcs" { }
 
 locals {
   dcs = try(
@@ -116,7 +116,7 @@ data "cloudinit_config" "minecraft" {
 
   part {
     content_type = "text/cloud-config"
-    content      = templatefile("${path.module}/cloud-config-plugins.yaml.tftpl", {plugins = yamlencode(local.plugins)})
+    content      = templatefile("${path.module}/cloud-config.yaml.tftpl", {plugins = yamlencode(local.plugins)})
   }
 }
 
