@@ -24,11 +24,6 @@ output "rcon_password" {
   sensitive   = true
 }
 
-output "datacenter" {
-  description = "The datacenter the server is in"
-  value       = local.dcs
-}
-
 output "image" {
   description = "Packer image used"
   value       = data.hcp_packer_artifact.mcpaper-java
