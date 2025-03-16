@@ -6,15 +6,11 @@ data hcloud_server_type "mc" {
   name = var.hcloud_server_type
 }
 
-data hcloud_datacenters "dcs" { }
+data hcloud_datacenter "dc" {
+  name = var.hcloud_datacenter
+}
 
 locals {
-  dcs = try(
-    one([for dc in data.hcloud_datacenters.dcs.datacenters : dc.name if dc.location == data.hcloud_location.loc.name && dc.name == var.hcloud_datacenter]), 
-    one([for dc in data.hcloud_datacenters.dcs.datacenters : dc.name if dc.location == data.hcloud_location.loc.name]),
-    "fsn-dc14"
-  )
-
   create_dnsimple_record = (var.hostname != "" && var.dnsimple_token != "")
   cloudinit_config = merge(
     merge(
@@ -24,7 +20,7 @@ locals {
         server_id                = random_uuid.server_id.result
         ops                      = jsonencode(var.ops)
         cwd                      = path.module
-        mc_ram                     = data.hcloud_server_type.mc.memory - 1024
+        mc_ram                   = data.hcloud_server_type.mc.memory - 1024
     }),
     var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? {
       rcon-password = random_password.rcon[0].result
@@ -53,7 +49,7 @@ resource "hcloud_ssh_key" "keys" {
 resource "hcloud_primary_ip" "mainv4" {
   name          = "mc-ipv4"
   type          = "ipv4"
-  datacenter    = local.dcs
+  datacenter    = data.hcloud_datacenter.dc.name
   assignee_type = "server"
   auto_delete   = false
   labels = {
@@ -64,7 +60,7 @@ resource "hcloud_primary_ip" "mainv4" {
 resource "hcloud_primary_ip" "mainv6" {
   name          = "mc-ipv6"
   type          = "ipv6"
-  datacenter    = local.dcs
+  datacenter    = data.hcloud_datacenter.dc.name
   assignee_type = "server"
   auto_delete   = false
   labels = {
@@ -84,7 +80,7 @@ resource "hcloud_server" "minecraft" {
   image       = data.hcp_packer_artifact.mcpaper-java.external_identifier
   server_type = data.hcloud_server_type.mc.name
   ssh_keys    = [for key in hcloud_ssh_key.keys : key.id]
-  datacenter  = local.dcs
+  datacenter  = data.hcloud_datacenter.dc.name
   labels = {
     "svc" : "minecraft"
   }

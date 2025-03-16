@@ -27,7 +27,6 @@ output "rcon_password" {
 output "datacenter" {
   description = "The datacenter the server is in"
   value       = local.dcs
-  
 }
 
 output "image" {
