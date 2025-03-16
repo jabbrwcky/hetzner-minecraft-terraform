@@ -20,12 +20,16 @@ terraform {
       source  = "hashicorp/tls"
       version = "4.0.6"
     }
+    hcp = {
+      source = "hashicorp/hcp"
+      version = "0.104.0"
+    }
   }
 }
 
-provider "cloudinit" {
-  # Configuration options
-}
+provider "hcp" {}
+
+provider "cloudinit" {}
 
 provider "hcloud" {
   token = var.hcloud_token

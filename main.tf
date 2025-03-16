@@ -81,7 +81,7 @@ data "hcp_packer_artifact" "mcpaper-java" {
 
 resource "hcloud_server" "minecraft" {
   name        = "minecraft"
-  image       = hcp_packer_artifact.mcpaper-java.image
+  image       = data.hcp_packer_artifact.mcpaper-java.image
   server_type = data.hcloud_server_type.mc.name
   ssh_keys    = [for key in hcloud_ssh_key.keys : key.id]
   datacenter  = local.dcs
