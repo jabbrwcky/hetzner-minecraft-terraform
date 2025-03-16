@@ -1,0 +1,28 @@
+cloudConfig: |
+Content-Type: multipart/mixed; boundary="==NewPart=="
+MIME-Version: 1.0
+
+--==NewPart==
+Content-Type: text/cloud-config; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment; filename="base-cloud-config"
+
+# cloud-config
+growpart:
+  mode: "off"
+resize_rootfs: false
+
+package_update: true
+package_upgrade: true
+packages:
+  - openjdk-21-jdk-headless
+  - curl
+  - jq
+
+users:
+  - name: minecrafter
+    shell: /bin/bash
+    homedir: /home/minecrafter
+
+byobu_by_default: enable-system

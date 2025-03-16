@@ -25,7 +25,7 @@ source "hcloud" "base" {
     "minecraft_version" = var.minecraft_version
   }
 
-  # user_data_file = "cloud-init.yml"
+  user_data_file = "user-data.multipart"
 }
 
 build {
@@ -60,12 +60,6 @@ build {
       "cloud-init status --wait",
     ]
   }
-  provisioner "shell" {
-    script = "scripts/system_setup.sh"
-    environment_vars = [
-      "MINECRAFT_VERSION=${var.minecraft_version}",
-    ]
-  }
 
   provisioner "shell" {
     script = "scripts/download.sh"
@@ -93,13 +87,6 @@ build {
     destination = "/home/minecrafter/plugins"
     source = "plugins"
   }
-
-  # provisioner "shell" {
-  #   inline =  templatefile("download_plugins.pkrtpl.hcl", {
-  #     minecraft_version = var.minecraft_version,
-  #     plugins           = var.plugins
-  #   })
-  # }
 
   provisioner "file" {
     source      = "minecraft.service"
