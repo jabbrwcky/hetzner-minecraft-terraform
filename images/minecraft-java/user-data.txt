@@ -6,7 +6,7 @@ MIME-Version: 1.0
 Content-Type: text/cloud-config; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment; filename="cloud-config"
+Content-Disposition: attachment; filename="mc-cloud-config"
 
 # cloud-config
 growpart:
