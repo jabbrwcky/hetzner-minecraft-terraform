@@ -1,4 +1,5 @@
-#!/usr/bin/env sh -x
+#!/usr/bin/env sh
+set -x
 
 cd /home/minecrafter
 

@@ -42,7 +42,7 @@ source "hcloud" "base" {
     "minecraft_version" = var.minecraft_version
   }
 
-  user_data = file("cloud-init.yaml")
+  user_data = file("user-data.txt")
 }
 
 build {
@@ -64,15 +64,19 @@ build {
   source "hcloud.base" {
     name         = "papermc-java"
   }
-  provisioner "shell" {
-    execute_command = "echo 'packer' | sudo -S sh -c '{{ .Vars }} {{ .Path }}'"
-    inline = [
-      "cloud-init status --wait",
-    ]
-  }
 
   provisioner "shell" {
-    script = "download.sh"
+    inline = [
+      "cloud-init status --wait || true",
+      "cloud-init status --long || true",
+    ]
+  }
+  # provisioner "shell" {
+  #   script = "scripts/system_setup.sh"
+  # }
+
+  provisioner "shell" {
+    script = "scripts/download.sh"
     environment_vars = [
       "MINECRAFT_VERSION=${var.minecraft_version}",
     ]
@@ -84,6 +88,11 @@ build {
   #     plugins           = var.plugins
   #   })
   # }
+
+  provisioner "file"{
+    destination = "/home/minecrafter/eula.txt"
+    source = "eula.txt"
+  }
 
   provisioner "file" {
     source      = "minecraft.service"
@@ -99,6 +108,6 @@ build {
   }
 
   provisioner "shell" {
-    script = "../cleanup.sh"
+    script = "../scripts/cleanup.sh"
   }
 }
