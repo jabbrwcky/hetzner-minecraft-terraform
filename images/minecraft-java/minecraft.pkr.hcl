@@ -18,7 +18,6 @@ variable "plugins" {
   type = list(object({
     name        = string
     url         = string
-    configfiles = list(string)
   }))
 
   default = []
@@ -28,6 +27,12 @@ variable "minecraft_version" {
   description = "Minecraft version to install"
   type        = string
   default     = "1.21.4"
+}
+
+locals {
+  plugins = [ for plugin in var.plugins :
+    "curl --output-dir /home/minecrafter/plugins/${plugin.name} --create-dirs -OL ${plugin.url}"
+  ]
 }
 
 source "hcloud" "base" {
@@ -66,14 +71,11 @@ build {
   }
 
   provisioner "shell" {
+    valid_exit_codes = [0, 2] # 2 is returned by cloud-init status on recoverable errors
     inline = [
-      "cloud-init status --wait || true",
-      "cloud-init status --long || true",
+      "cloud-init status --wait",
     ]
   }
-  # provisioner "shell" {
-  #   script = "scripts/system_setup.sh"
-  # }
 
   provisioner "shell" {
     script = "scripts/download.sh"
@@ -82,17 +84,36 @@ build {
     ]
   }
 
-  # provisioner "shell" {
-  #   inline = templatefile("download_plugins.pkrtpl.hcl", {
-  #     minecraft_version = var.minecraft_version,
-  #     plugins           = var.plugins
-  #   })
+  dynamic "provisioner" {
+    labels = ["shell"]
+    for_each = var.plugins
+    content {
+      inline = [
+        "curl --output-dir /home/minecrafter/plugins/${provisioner.value.name} --create-dirs -OL ${provisioner.value.url}"
+      ]
+    }
+  }
+
+  # provisioner "shell"{
+  #   inline = local.plugins
   # }
 
   provisioner "file"{
     destination = "/home/minecrafter/eula.txt"
     source = "eula.txt"
   }
+
+  provisioner "file"{
+    destination = "/home/minecrafter/plugins"
+    source = "plugins"
+  }
+
+  # provisioner "shell" {
+  #   inline =  templatefile("download_plugins.pkrtpl.hcl", {
+  #     minecraft_version = var.minecraft_version,
+  #     plugins           = var.plugins
+  #   })
+  # }
 
   provisioner "file" {
     source      = "minecraft.service"
