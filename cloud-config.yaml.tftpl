@@ -15,10 +15,10 @@ fs_setup:
     label: minecraft
 
 mounts:
-  - ["${volume_device}", /var/lib/minecraft, ext4, defaults, "0", "2"]
+  - ["${volume_device}", /home/minecrafter/worlds, ext4, defaults, "0", "2"]
 
 write_files:
-  - path: /var/lib/minecraft/server.properties
+  - path: /home/minecrafter/server.properties
     content: |
       #Minecraft server properties
       accepts-transfers=${accepts-transfers}
@@ -87,14 +87,7 @@ write_files:
     encoding: text/plain
     append: false
     defer: true
-  - path: /etc/systemd/system/minecraft.service
-    encoding: b64
-    content: ${filebase64("${cwd}/minecraft.service")}
-    owner: root:root
-    permissions: "0o644"
-    append: false
-    defer: true
-  - path: /var/lib/minecraft/ops.json
+  - path: /home/minecrafter/ops.json
     content: >-
       ${ops}
     owner: minecrafter:minecrafter
@@ -102,11 +95,9 @@ write_files:
     permissions: "0o644"
     append: false
     defer: true
-  - path: /root/ghostty.terminfo
-    content: ${filebase64("${cwd}/ghostty.terminfo")}
-    encoding: b64
 
-runcmd:
-  - [tic, -x, /root/ghostty.terminfo]
-  - [cd, /var/lib/minecraft]
-  - [curl, -sSL, "${minecraft-server-jar-url}", -o, server.jar]
+    runcmd:
+  - [sed, -i, "s/3072/${mc_ram}/g", /etc/systemd/system/minecraft.service]
+  - [systemctl, daemon-reload]
+  - [systemctl, enable, minecraft]
+  - [systemctl, start, minecraft]

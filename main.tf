@@ -1,15 +1,30 @@
+data "hcloud_location" "loc" {
+  name = var.hcloud_location
+}
+
+data hcloud_server_type "mc" {
+  name = var.hcloud_server_type
+}
+
+data hcloud_datacenters "dc" { }
+
 locals {
+  dcs = try(
+    one([for dc in data.hcloud_datacenters.dcs.datacenters : dc.name if dc.location == data.hcloud_location.loc.name && dc.name == var.hcloud_datacenter]), 
+    one([for dc in data.hcloud_datacenters.dcs.datacenters : dc.name if dc.location == data.hcloud_location.loc.name]),
+    "fsn-dc14"
+  )
+
   create_dnsimple_record = (var.hostname != "" && var.dnsimple_token != "")
   cloudinit_config = merge(
     merge(
       var.server_properties,
       {
-        "minecraft-server-jar-url" = var.minecraft-server-jar-url
-        "volume_device"            = hcloud_volume.worlds.linux_device
-        "server_id"                = random_uuid.server_id.result
-        "ops"                      = jsonencode(var.ops)
-        "plugins"                  = var.plugins
-        "cwd"                      = path.module
+        volume_device            = hcloud_volume.worlds.linux_device
+        server_id                = random_uuid.server_id.result
+        ops                      = jsonencode(var.ops)
+        cwd                      = path.module
+        mc_ram                     = data.hcloud_server_type.mc.memory - 1024
     }),
     var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? {
       rcon-password = random_password.rcon[0].result
@@ -38,7 +53,7 @@ resource "hcloud_ssh_key" "keys" {
 resource "hcloud_primary_ip" "mainv4" {
   name          = "mc-ipv4"
   type          = "ipv4"
-  datacenter    = "fsn1-dc14"
+  datacenter    = local.dcs
   assignee_type = "server"
   auto_delete   = false
   labels = {
@@ -49,7 +64,7 @@ resource "hcloud_primary_ip" "mainv4" {
 resource "hcloud_primary_ip" "mainv6" {
   name          = "mc-ipv6"
   type          = "ipv6"
-  datacenter    = "fsn1-dc14"
+  datacenter    = local.dcs
   assignee_type = "server"
   auto_delete   = false
   labels = {
@@ -57,12 +72,19 @@ resource "hcloud_primary_ip" "mainv6" {
   }
 }
 
+data "hcp_packer_artifact" "mcpaper-java" {
+  bucket_name   = "mcpaper-java"
+  channel_name  = "latest"
+  platform      = "hetznercloud"
+  region        = ""
+}
+
 resource "hcloud_server" "minecraft" {
   name        = "minecraft"
-  image       = "ubuntu-24.04"
-  server_type = "cx22"
+  image       = hcp_packer_artifact.mcpaper-java.image
+  server_type = data.hcloud_server_type.mc.name
   ssh_keys    = [for key in hcloud_ssh_key.keys : key.id]
-  datacenter  = "fsn1-dc14"
+  datacenter  = local.dcs
   labels = {
     "svc" : "minecraft"
   }
@@ -84,7 +106,7 @@ resource "hcloud_volume_attachment" "main" {
 
 resource "hcloud_volume" "worlds" {
   name     = "minecraft-worlds"
-  location = "fsn1"
+  location = data.hcloud_location.loc.name
   size     = 10
 }
 
@@ -94,15 +116,7 @@ data "cloudinit_config" "minecraft" {
 
   part {
     content_type = "text/cloud-config"
-    content      = file("${path.module}/cloud-config.yaml")
-  }
-  part {
-    content_type = "text/cloud-config"
     content      = templatefile("${path.module}/cloud-config-plugins.yaml.tftpl", {plugins = yamlencode(local.plugins)})
-  }
-  part {
-    content_type = "text/cloud-config"
-    content      = templatefile("${path.module}/cloud-config.yaml.tftpl", local.cloudinit_config)
   }
 }
 

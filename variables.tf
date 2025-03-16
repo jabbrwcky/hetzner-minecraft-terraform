@@ -3,6 +3,23 @@ variable "hcloud_token" {
   sensitive   = true
 }
 
+variable "hcloud_location" {
+  description = "Hetzner Cloud Location"
+  type        = string
+  default     = "fsn1"
+}
+variable "hcloud_datacenter" {
+  description = "Hetzner Cloud datacenter"
+  type        = string
+  default     = "fsn1"
+}
+
+variable "hcloud_server_type" {
+  description = "Hetzner Cloud Server Type"
+  type        = string
+  default = "cx22"
+}
+
 variable "hostname" {
   description = "Hostname to use e.g. 'foo' for foo.example.com"
   type        = string
@@ -26,12 +43,6 @@ variable "dnsimple_token" {
 variable "ssh_key" {
   description = "Public SSH key(s) to use for the server"
   type        = map(string)
-}
-
-variable "minecraft-server-jar-url" {
-  description = "Download URL for the Minecraft server jar"
-  type        = string
-  default     = "https://api.papermc.io/v2/projects/paper/versions/1.21.4/builds/187/downloads/paper-1.21.4-187.jar" # 1.21.4
 }
 
 variable "ops" {
