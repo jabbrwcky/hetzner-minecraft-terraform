@@ -25,7 +25,7 @@ source "hcloud" "base" {
     "minecraft_version" = var.minecraft_version
   }
 
-  user_data_file = "user-data.multipart"
+  # user_data_file = "user-data.multipart"
 }
 
 build {
@@ -54,13 +54,17 @@ build {
     source      = "../ghostty.terminfo"
   }
 
-  provisioner "shell" {
-    valid_exit_codes = [0, 2] # 2 is returned by cloud-init status on recoverable errors
-    inline = [
-      "cloud-init status --wait",
-    ]
-  }
+  # provisioner "shell" {
+  #   valid_exit_codes = [0, 2] # 2 is returned by cloud-init status on recoverable errors
+  #   inline = [
+  #     "cloud-init status --wait",
+  #   ]
+  # }
 
+  provisioner "shell" {
+    script = "scripts/system_setup.sh"
+  }
+  
   provisioner "shell" {
     script = "scripts/download.sh"
     environment_vars = [
