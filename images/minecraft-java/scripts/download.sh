@@ -22,6 +22,5 @@ else
     exit 1
 fi
 
-
 mkdir /home/minecrafter/plugins
 chown -R minecrafter:minecrafter /home/minecrafter/plugins

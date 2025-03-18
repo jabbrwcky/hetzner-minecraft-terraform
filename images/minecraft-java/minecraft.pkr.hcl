@@ -32,7 +32,6 @@ source "hcloud" "base" {
       mode: "off"
     resize_rootfs: false
   EOF
-
 }
 
 build {
@@ -85,6 +84,12 @@ build {
         "curl --output-dir /home/minecrafter/plugins/${provisioner.value.name} --create-dirs -OL ${provisioner.value.url}"
       ]
     }
+  }
+
+  provisioner "shell" {
+    inline = [
+      "java -jar /home/minecrafter/server.jar --initSettings",
+    ]
   }
 
   provisioner "file"{
