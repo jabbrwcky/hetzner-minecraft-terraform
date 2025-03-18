@@ -20,12 +20,19 @@ source "hcloud" "base" {
   server_type   = "cx22"
   ssh_username  = "root"
   snapshot_name = "papermc-java-ubuntu-24.04-${var.minecraft_version}-${timestamp()}"
+
   snapshot_labels = {
     "minecraft"         = "java"
     "minecraft_version" = var.minecraft_version
   }
 
-  # user_data_file = "user-data.multipart"
+  user_data = <<-EOF
+    #cloud-config
+    growpart:
+      mode: "off"
+    resize_rootfs: false
+  EOF
+
 }
 
 build {
@@ -49,17 +56,15 @@ build {
     name         = "papermc-java"
   }
 
+  provisioner "shell" {
+    inline           = ["cloud-init status --wait --long"]
+    valid_exit_codes = [0, 2]
+  }
+
   provisioner "file" {
     destination = "/tmp/ghostty.terminfo"
     source      = "../ghostty.terminfo"
   }
-
-  # provisioner "shell" {
-  #   valid_exit_codes = [0, 2] # 2 is returned by cloud-init status on recoverable errors
-  #   inline = [
-  #     "cloud-init status --wait",
-  #   ]
-  # }
 
   provisioner "shell" {
     script = "scripts/system_setup.sh"
@@ -103,6 +108,9 @@ build {
       "systemctl daemon-reload",
       "systemctl enable minecraft",
     ]
+  }
+  provisioner "shell" {
+    script = "../scripts/upgrade.sh"
   }
 
   provisioner "shell" {

@@ -1,27 +1,56 @@
 #!/usr/bin/env bash
 
-cloud-init clean --logs --machine-id --seed
-rm -rvf /var/lib/cloud/instances /etc/machine-id /var/lib/dbus/machine-id /var/log/cloud-init*
+set -eux
 
-rm -rf /run/cloud-init/*
-rm -rf /var/lib/cloud/*
+clean_cloud_init() {
+  cloud-init clean --logs --machine-id --seed --configs all
 
-export DEBIAN_FRONTEND=noninteractive
+  rm -rf /run/cloud-init/*
+  rm -rf /var/lib/cloud/*
+}
 
-apt-get -y autopurge
-apt-get -y clean
+clean_apt() {
+  export DEBIAN_FRONTEND=noninteractive
 
-rm -rf /var/lib/apt/lists/*
+  apt-get -y autopurge
+  apt-get -y clean
 
-journalctl --flush
-journalctl --rotate --vacuum-time=0
+  rm -rf /var/lib/apt/lists/*
+}
 
-find /var/log -type f -exec truncate --size 0 {} \; # truncate system logs
-find /var/log -type f -name '*.[1-9]' -delete # remove archived logs
-find /var/log -type f -name '*.gz' -delete # remove compressed archived logs
+clean_ssh_keys() {
+  rm -f /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
+}
 
-rm -f /etc/ssh/ssh_host_*_key /etc/ssh/ssh_host_*_key.pub
+clean_logs() {
+  journalctl --flush
+  journalctl --rotate --vacuum-time=0
 
-dd if=/dev/zero of=/zero bs=4M || true
-sync
-rm -f /zero
+  find /var/log -type f -exec truncate --size 0 {} \; # truncate system logs
+  find /var/log -type f -name '*.[1-9]' -delete # remove archived logs
+  find /var/log -type f -name '*.gz' -delete # remove compressed archived logs
+}
+
+clean_root() {
+  unset HISTFILE
+
+  rm -rf /root/.cache
+  rm -rf /root/.ssh
+  rm -f /root/.bash_history
+  rm -f /root/.lesshst
+  rm -f /root/.viminfo
+}
+
+flush_disk() {
+  dd if=/dev/zero of=/zero bs=4M || true
+  sync
+  rm -f /zero
+}
+
+clean_cloud_init
+clean_apt
+clean_ssh_keys
+clean_logs
+clean_root
+
+flush_disk
