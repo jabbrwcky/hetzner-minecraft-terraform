@@ -34,6 +34,12 @@ variable "hcloud_server_type" {
   default = "cx22"
 }
 
+variable "reserved_memory" {
+  description = "Amount of memory to reserve for the system in MB"
+  type        = number
+  default     = 1024
+}
+
 variable "hostname" {
   description = "Hostname to use e.g. 'foo' for foo.example.com"
   type        = string

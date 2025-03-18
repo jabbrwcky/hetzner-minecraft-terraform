@@ -11,6 +11,7 @@ data hcloud_datacenter "dc" {
 }
 
 locals {
+  minecraft_ram = (data.hcloud_server_type.mc.memory *1024) - var.reserved_memory
   create_dnsimple_record = (var.hostname != "" && var.dnsimple_token != "")
   cloudinit_config = merge(
     merge(
@@ -20,7 +21,7 @@ locals {
         server_id                = random_uuid.server_id.result
         ops                      = jsonencode(var.ops)
         cwd                      = path.module
-        mc_ram                   = data.hcloud_server_type.mc.memory - 1024
+        mc_ram                   = local.minecraft_ram
     }),
     var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? {
       rcon-password = random_password.rcon[0].result
