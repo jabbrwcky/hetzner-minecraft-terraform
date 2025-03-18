@@ -23,4 +23,7 @@ else
 fi
 
 mkdir /home/minecrafter/plugins
-chown -R minecrafter:minecrafter /home/minecrafter/plugins
+mkdir /home/minecrafter/worlds
+chown -R minecrafter:minecrafter /home/minecrafter
+
+java -jar /home/minecrafter/server.jar --initSettings

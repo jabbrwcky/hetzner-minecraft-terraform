@@ -86,12 +86,6 @@ build {
     }
   }
 
-  provisioner "shell" {
-    inline = [
-      "java -jar /home/minecrafter/server.jar --initSettings",
-    ]
-  }
-
   provisioner "file"{
     destination = "/home/minecrafter/eula.txt"
     source = "eula.txt"
