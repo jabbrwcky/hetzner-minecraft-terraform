@@ -81,7 +81,7 @@ build {
     for_each = var.plugins
     content {
       inline = [
-        "curl --output-dir /home/minecrafter/plugins/${provisioner.value.name} --create-dirs -OL ${provisioner.value.url}"
+        "curl --output-dir /home/minecrafter/plugins/ --create-dirs -OL ${provisioner.value.url}"
       ]
     }
   }
