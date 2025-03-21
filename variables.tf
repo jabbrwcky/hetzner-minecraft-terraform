@@ -89,7 +89,7 @@ variable "plugins" {
 }
 
 variable "tailscale_auth_key" {
-  description = "Tailscale Auth Key"
+  description = "Tailscale Auth Key for adding server to tailnet"
   sensitive   = true
   type = string
 }
