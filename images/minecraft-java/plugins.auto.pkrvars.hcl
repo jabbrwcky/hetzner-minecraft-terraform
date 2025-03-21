@@ -2,7 +2,7 @@ minecraft_version = "1.21.4"
 plugins = [
   {
     name        = "voicechat"
-    url         = "https://hangarcdn.papermc.io/plugins/henkelmax/SimpleVoiceChat/versions/bukkit-2.5.25/PAPER/voicechat-bukkit-2.5.25.jar"
+    url         = "https://hangarcdn.papermc.io/plugins/henkelmax/SimpleVoiceChat/versions/bukkit-2.5.28/PAPER/voicechat-bukkit-2.5.28.jar"
   },
   {
     name        = "multiverse"
