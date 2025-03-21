@@ -103,5 +103,5 @@ runcmd:
   - [systemctl, daemon-reload]
   - [systemctl, enable, minecraft]
   - [systemctl, start, minecraft]
-  - ${ts_auth_key ? ["tailscale", "up", "--auth-key=${ts_auth_key}"] : []}
-  - ${ts_auth_key ? ["tailscale", "set", "--ssh"] : []}
+  - ${ts_auth_key != nulll ? ["tailscale", "up", "--auth-key=${ts_auth_key}"] : []}
+  - ${ts_auth_key != null ? ["tailscale", "set", "--ssh"] : []}
