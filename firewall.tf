@@ -46,8 +46,6 @@ resource "hcloud_firewall" "firewall" {
     ]
   }
 
-
-
   rule {
     direction = "in"
     protocol  = "tcp"

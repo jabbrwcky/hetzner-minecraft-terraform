@@ -88,6 +88,12 @@ variable "plugins" {
   default = []
 }
 
+variable "tailscale_auth_key" {
+  description = "Tailscale Auth Key"
+  sensitive   = true
+  type = string
+}
+
 variable "server_properties" {
   description = "Minecraft server properties. See https://minecraft.wiki/w/Server.properties for details."
   type = object({

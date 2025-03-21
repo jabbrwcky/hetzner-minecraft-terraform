@@ -22,6 +22,7 @@ locals {
         ops                      = jsonencode(var.ops)
         cwd                      = path.module
         mc_ram                   = local.minecraft_ram
+        ts_auth_key              = var.tailscale_auth_key
     }),
     var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? {
       rcon-password = random_password.rcon[0].result
