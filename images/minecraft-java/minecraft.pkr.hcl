@@ -80,6 +80,7 @@ build {
     labels = ["shell"]
     for_each = var.plugins
     content {
+      inline_shebang = "/bin/sh -ex"
       inline = [
         "curl --output-dir /home/minecrafter/plugins/ --create-dirs -OL ${provisioner.value.url}"
       ]
@@ -102,12 +103,17 @@ build {
   }
 
   provisioner "shell" {
+    script = "../scripts/init.sh"
+  }
+
+  provisioner "shell" {
     inline = [
       "mv /tmp/minecraft.service /etc/systemd/system/minecraft.service",
       "systemctl daemon-reload",
       "systemctl enable minecraft",
     ]
   }
+
   provisioner "shell" {
     script = "../scripts/upgrade.sh"
   }
