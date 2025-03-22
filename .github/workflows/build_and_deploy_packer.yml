@@ -6,6 +6,7 @@ env:
   HCP_CLIENT_SECRET: ${{ secrets.HCP_CLIENT_SECRET }}
   # HCP_PROJECT_ID: ${{ secrets.HCP_PROJECT_ID }}
   # HCP_ORGANIZATION_ID: ${{ secrets.HCP_ORGANIZATION_ID }}
+  HCLOUD_TOKEN: ${{ secrets.HCLOUD_TOKEN }}
   HCP_BUCKET_NAME: "mcpaper-java"
   
 on:
