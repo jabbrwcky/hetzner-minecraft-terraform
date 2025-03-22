@@ -103,7 +103,7 @@ build {
   }
 
   provisioner "shell" {
-    script = "../scripts/init.sh"
+    script = "scripts/init.sh"
   }
 
   provisioner "shell" {
