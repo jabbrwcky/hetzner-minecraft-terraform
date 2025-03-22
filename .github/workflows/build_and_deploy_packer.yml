@@ -23,6 +23,9 @@ on:
 jobs:
   build-artifact:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: images/minecraft-java
     outputs:
       version_fingerprint: ${{ steps.hcp.outputs.version_fingerprint }}
     steps:
@@ -56,6 +59,9 @@ jobs:
     name: Update HCP Packer channel
     needs: ["build-artifact"]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: images/minecraft-java
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
