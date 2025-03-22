@@ -54,7 +54,7 @@ jobs:
           last_run_uuid=$(jq -r '.last_run_uuid' "./packer_manifest.json")
           build=$(jq -r '.builds[] | select(.packer_run_uuid == "'"$last_run_uuid"'")' "./packer_manifest.json")
           version_fingerprint=$(echo "$build" | jq -r '.custom_data.version_fingerprint')
-          echo "::set-output name=version_fingerprint::$version_fingerprint"
+          echo "name=version_fingerprint::$version_fingerprint"  >> $GITHUB_OUTPUT
           
   update-hcp-packer-channel:
     name: Update HCP Packer channel
