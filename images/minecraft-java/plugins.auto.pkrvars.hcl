@@ -1,20 +1,20 @@
-minecraft_version = "1.21.4"
+minecraft_version = "1.21.5"
 plugins = [
   {
     name        = "voicechat"
-    url         = "https://hangarcdn.papermc.io/plugins/henkelmax/SimpleVoiceChat/versions/bukkit-2.5.28/PAPER/voicechat-bukkit-2.5.28.jar"
+    url         = "https://cdn.modrinth.com/data/9eGKb6K1/versions/uwKXRmMY/voicechat-bukkit-2.5.30.jar"
   },
   {
     name        = "multiverse"
-    url         = "https://hangarcdn.papermc.io/plugins/Multiverse/Multiverse-Core/versions/4.3.14/PAPER/multiverse-core-4.3.14.jar"
+    url         = "https://hangarcdn.papermc.io/plugins/Multiverse/Multiverse-Core/versions/5.0.0-pre.10/PAPER/multiverse-core-5.0.0-pre.10.jar"
   },
   {
     name        = "squaremap"
-    url         = "https://hangarcdn.papermc.io/plugins/jmp/squaremap/versions/1.3.4/PAPER/squaremap-paper-mc1.21.4-1.3.4.jar"
+    url         = "https://hangarcdn.papermc.io/plugins/jmp/squaremap/versions/1.3.6/PAPER/squaremap-paper-mc1.21.5-1.3.6.jar"
   },
   {
     name        = "noble-whitelist"
-    url         = "https://hangarcdn.papermc.io/plugins/NobelD/NobleWhitelist/versions/1.2.9/PAPER/NobleWhitelist-1.2.9.jar"
+    url         = "https://cdn.modrinth.com/data/hBuYjABw/versions/GTFEHWqX/NobleWhitelist-1.2.12.jar"
   },
   {
     name        = "estools"
