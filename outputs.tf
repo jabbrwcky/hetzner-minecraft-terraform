@@ -24,7 +24,7 @@ output "rcon_password" {
   sensitive   = true
 }
 
-output "image" {
-  description = "Packer image used"
-  value       = data.hcp_packer_artifact.mcpaper-java
-}
+# output "image" {
+#   description = "Packer image used"
+#   value       = data.hcp_packer_artifact.mcpaper-java
+# }

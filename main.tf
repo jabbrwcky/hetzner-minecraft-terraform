@@ -70,12 +70,12 @@ resource "hcloud_primary_ip" "mainv6" {
   }
 }
 
-data "hcp_packer_artifact" "mcpaper-java" {
-  bucket_name   = "mcpaper-java"
-  channel_name  = "latest"
-  platform      = "hetznercloud"
-  region        = ""
-}
+# data "hcp_packer_artifact" "mcpaper-java" {
+#   bucket_name   = "mcpaper-java"
+#   channel_name  = "latest"
+#   platform      = "hetznercloud"
+#   region        = ""
+# }
 
 resource "hcloud_server" "minecraft" {
   name        = "minecraft"

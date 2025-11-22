@@ -1,6 +1,19 @@
 terraform {
   required_version = ">=1.10.0"
-  
+  backend "s3" {
+    endpoints = {
+      s3 = "https://s3.eu-central-003.backblazeb2.com"
+    }
+    bucket = "terraform-hh"
+    key    = "minecraft/minecraft.tfstate"
+    region = "eu-central-003"
+    skip_credentials_validation = true
+    skip_metadata_api_check     = true
+    skip_region_validation      = true
+    skip_requesting_account_id  = true
+    skip_s3_checksum            = true
+  }
+
   required_providers {
     hcloud = {
       source  = "hetznercloud/hcloud"
@@ -22,16 +35,7 @@ terraform {
       source  = "hashicorp/tls"
       version = "4.1.0"
     }
-    hcp = {
-      source = "hashicorp/hcp"
-      version = "0.104.0"
-    }
   }
-}
-
-provider "hcp" {
-  client_id = var.tfsp_client_id
-  client_secret = var.tfsp_client_secret
 }
 
 provider "cloudinit" {}
