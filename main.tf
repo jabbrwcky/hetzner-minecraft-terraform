@@ -79,7 +79,7 @@ resource "hcloud_primary_ip" "mainv6" {
 
 resource "hcloud_server" "minecraft" {
   name        = "minecraft"
-  image       = data.hcp_packer_artifact.mcpaper-java.external_identifier
+  image       = "ubuntu-24.04"
   server_type = data.hcloud_server_type.mc.name
   ssh_keys    = [for key in hcloud_ssh_key.keys : key.id]
   datacenter  = data.hcloud_datacenter.dc.name

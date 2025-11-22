@@ -35,6 +35,10 @@ terraform {
       source  = "hashicorp/tls"
       version = "4.1.0"
     }
+    tailscale = {
+      source = "tailscale/tailscale"
+      version = "0.24.0"
+    }
   }
 }
 
@@ -48,3 +52,5 @@ provider "dnsimple" {
   token   = var.dnsimple_token
   account = var.dnsimple_account
 }
+
+provider "tailscale" {}
