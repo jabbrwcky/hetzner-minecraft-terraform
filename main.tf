@@ -2,31 +2,23 @@ data "hcloud_location" "loc" {
   name = var.hcloud_location
 }
 
-data hcloud_server_type "mc" {
+data "hcloud_server_type" "mc" {
   name = var.hcloud_server_type
 }
 
-data hcloud_datacenter "dc" {
+data "hcloud_datacenter" "dc" {
   name = var.hcloud_datacenter
 }
 
 locals {
-  minecraft_ram = (data.hcloud_server_type.mc.memory *1024) - var.reserved_memory
+  # minecraft_ram          = (data.hcloud_server_type.mc.memory * 1024) - var.reserved_memory
   create_dnsimple_record = (var.hostname != "" && var.dnsimple_token != "")
-  cloudinit_config = merge(
-    merge(
-      var.server_properties,
-      {
-        volume_device            = hcloud_volume.worlds.linux_device
-        server_id                = random_uuid.server_id.result
-        ops                      = jsonencode(var.ops)
-        cwd                      = path.module
-        mc_ram                   = local.minecraft_ram
-        ts_auth_key              = var.tailscale_auth_key
-    }),
-    var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? {
-      rcon-password = random_password.rcon[0].result
-  } : {})
+  cloudinit_config = {
+    volume_device = hcloud_volume.worlds.linux_device
+    server_id     = random_uuid.server_id.result
+    cwd = path.module
+    ts_auth_key = var.tailscale_auth_key
+  }
 }
 
 resource "random_uuid" "server_id" {
@@ -35,12 +27,12 @@ resource "random_uuid" "server_id" {
   }
 }
 
-resource "random_password" "rcon" {
-  count            = var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? 1 : 0
-  length           = 16
-  special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
-}
+# resource "random_password" "rcon" {
+#   count            = var.server_properties.enable-rcon && var.server_properties.rcon-password == "" ? 1 : 0
+#   length           = 16
+#   special          = true
+#   override_special = "!#$%&*()-_=+[]{}<>:?"
+# }
 
 resource "hcloud_ssh_key" "keys" {
   for_each   = var.ssh_key
@@ -69,13 +61,6 @@ resource "hcloud_primary_ip" "mainv6" {
     "svc" : "minecaft"
   }
 }
-
-# data "hcp_packer_artifact" "mcpaper-java" {
-#   bucket_name   = "mcpaper-java"
-#   channel_name  = "latest"
-#   platform      = "hetznercloud"
-#   region        = ""
-# }
 
 resource "hcloud_server" "minecraft" {
   name        = "minecraft"

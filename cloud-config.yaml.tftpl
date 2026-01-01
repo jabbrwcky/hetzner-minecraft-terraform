@@ -11,100 +11,75 @@ disk_setup:
     table_type: gpt
 
 fs_setup:
-  - cmd: "mkfs -t %(filesystem)s -L %(label)s %(device)s"
-    device: "${volume_device}"
+  - device: "${volume_device}"
     filesystem: ext4
     label: minecraft
 
 mounts:
   - ["${volume_device}", /home/minecrafter/worlds, ext4, defaults, "0", "2"]
 
-write_files:
-  - path: /home/minecrafter/server.properties
-    content: |
-      #Minecraft server properties
-      accepts-transfers=${accepts-transfers}
-      allow-flight=${allow-flight}
-      allow-nether=${allow-nether}
-      broadcast-console-to-ops=${broadcast-console-to-ops}
-      broadcast-rcon-to-ops=${broadcast-rcon-to-ops}
-      bug-report-link=${bug-report-link}
-      difficulty=${difficulty}
-      enable-command-block=${enable-command-block}
-      enable-jmx-monitoring=${enable-jmx-monitoring}
-      enable-query=${enable-query}
-      enable-rcon=${enable-rcon}
-      enable-status=${enable-status}
-      enforce-secure-profile=${enforce-secure-profile}
-      enforce-whitelist=${enforce-whitelist}
-      entity-broadcast-range-percentage=${entity-broadcast-range-percentage}
-      force-gamemode=${force-gamemode}
-      function-permission-level=${function-permission-level}
-      gamemode=${gamemode}
-      generate-structures=${generate-structures}
-      generator-settings=${generator-settings}
-      hardcore=${hardcore}
-      hide-online-players=${hide-online-players}
-      initial-disabled-packs=${initial-disabled-packs}
-      initial-enabled-packs=${initial-enabled-packs}
-      level-name=${level-name}
-      level-seed=${level-seed}
-      level-type=${level-type}
-      log-ips=${log-ips}
-      max-chained-neighbor-updates=${max-chained-neighbor-updates}
-      max-players=${max-players}
-      max-tick-time=${max-tick-time}
-      max-world-size=${max-world-size}
-      motd=${motd}
-      network-compression-threshold=${network-compression-threshold}
-      online-mode=${online-mode}
-      op-permission-level=${op-permission-level}
-      pause-when-empty-seconds=${pause-when-empty-seconds}
-      player-idle-timeout=${player-idle-timeout}
-      prevent-proxy-connections=${prevent-proxy-connections}
-      pvp=${pvp}
-      query.port=${query-port}
-      rate-limit=${rate-limit}
-      rcon.password=${rcon-password}
-      rcon.port=${rcon-port}
-      region-file-compression=${region-file-compression}
-      require-resource-pack=${require-resource-pack}
-      resource-pack=${resource-pack}
-      resource-pack-id=${resource-pack-id}
-      resource-pack-prompt=${resource-pack-prompt}
-      resource-pack-sha1=${resource-pack-sha1}
-      server-ip=${server-ip}
-      server-port=${server-port}
-      simulation-distance=${simulation-distance}
-      spawn-monsters=${spawn-monsters}
-      spawn-protection=${spawn-protection}
-      sync-chunk-writes=${sync-chunk-writes}
-      text-filtering-config=${text-filtering-config}
-      text-filtering-version=${text-filtering-version}
-      use-native-transport=${use-native-transport}
-      view-distance=${view-distance}
-      white-list=${white-list}
-    owner: minecrafter:minecrafter
-    permissions: "0o644"
-    encoding: text/plain
-    append: false
-    defer: true
-  - path: /home/minecrafter/ops.json
-    content: >-
-      ${ops}
-    owner: minecrafter:minecrafter
-    encoding: text/plain
-    permissions: "0o644"
-    append: false
-    defer: true
+users:
+  - name: jens
+    groups: users, admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBBxazeWHqTg7epmVj7Gq/acBFuSDTNbN1iUeJICcO2tvsxvl98iNmRsTH4oAHvEVxOD2HRtxLuHyA+dkxrz+8u0= jens@birdy-SSH@secretive.birdy.local
+  - name: ansible
+    groups: users, admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    lock_password: true
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBBxazeWHqTg7epmVj7Gq/acBFuSDTNbN1iUeJICcO2tvsxvl98iNmRsTH4oAHvEVxOD2HRtxLuHyA+dkxrz+8u0= jens@birdy-SSH@secretive.birdy.local
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICJrwfIubFkXkY5N4DZCdCEXd+D5nbuuSAHreIoQ83ly ansible@birdy
+  - name: minecrafter
+    groups: users
+    shell: /bin/bash
+    lock_password: true
+    ssh_authorized_keys:
+      - ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBBxazeWHqTg7epmVj7Gq/acBFuSDTNbN1iUeJICcO2tvsxvl98iNmRsTH4oAHvEVxOD2HRtxLuHyA+dkxrz+8u0= jens@birdy-SSH@secretive.birdy.local
 
+packages:
+  - fail2ban
+  - ca-certificates
+  - openjdk-21-jre-headless
+  - curl
+  - jq
+  # -ufw
+package_update: true
+package_upgrade: true
+
+ssh_pwauth: false
+disable_root: false
+
+write_files:
+  # - path: /etc/ssh/sshd_config.d/ssh-hardening.conf
+  #   content: |
+  #     PermitRootLogin no
+  #     PasswordAuthentication no
+  #     KbdInteractiveAuthentication no
+  #     ChallengeResponseAuthentication no
+  #     MaxAuthTries 2
+  #     AllowTcpForwarding no
+  #     X11Forwarding no
+  #     AllowAgentForwarding no
+  #     AuthorizedKeysFile .ssh/authorized_keys
+  #     AllowUsers jens
 runcmd:
-  - [sed, -i, "s/3072/${mc_ram}/g", /etc/systemd/system/minecraft.service]
-  - [systemctl, daemon-reload]
-  - [systemctl, enable, minecraft]
-  - [systemctl, start, minecraft]
-%{if ts_auth_key != null}
-  - ["tailscale", "up", "--auth-key=${ts_auth_key}"]
-  - ["tailscale", "set", "--ssh"]
-%{endif}
-  
+  - printf "[sshd]\nenabled = true\nport = ssh, 22\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
+  - systemctl enable fail2ban
+  # - ufw allow 2222
+  # - ufw enable
+  # One-command install, from https://tailscale.com/download/
+  - ["sh", "-c", "curl -fsSL https://tailscale.com/install.sh | sh"]
+  # Set sysctl settings for IP forwarding (useful when configuring an exit node)
+  - [
+      "sh",
+      "-c",
+      "echo 'net.ipv4.ip_forward = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf && echo 'net.ipv6.conf.all.forwarding = 1' | sudo tee -a /etc/sysctl.d/99-tailscale.conf && sudo sysctl -p /etc/sysctl.d/99-tailscale.conf",
+    ]
+  - tailscale up --auth-key=${ts_auth_key}
+  - tailscale set --ssh
+  # - ["tailscale", "set", "--advertise-exit-node"]
+  - reboot
