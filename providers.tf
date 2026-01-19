@@ -17,7 +17,7 @@ terraform {
   required_providers {
     hcloud = {
       source  = "hetznercloud/hcloud"
-      version = "1.50.1"
+      version = "1.59.0"
     }
     cloudinit = {
       source  = "hashicorp/cloudinit"
